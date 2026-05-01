@@ -1,0 +1,1435 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<title>BPO Communication Assessment</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --navy:#0f1f3d; --navy-light:#1a3460; --gold:#c9a84c; --gold-light:#e8c97a;
+  --cream:#f8f4ed; --cream-dark:#ede8df; --white:#fff; --text:#1a1a2e;
+  --text-muted:#5a6070; --danger:#c0392b; --success:#1a6b3c;
+  --radius:12px; --shadow:0 4px 24px rgba(15,31,61,.10);
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html,body{width:100%;overflow-x:hidden;}
+body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--text);}
+
+/* FULLSCREEN OVERLAY */
+#fs-overlay{
+  position:fixed;inset:0;z-index:9999;background:var(--navy);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  text-align:center;padding:32px 24px;
+}
+#fs-overlay h2{font-family:'DM Serif Display',serif;font-size:28px;color:#fff;margin-bottom:12px;}
+#fs-overlay p{color:rgba(255,255,255,.6);font-size:14px;margin-bottom:28px;max-width:360px;line-height:1.7;}
+#fs-overlay .fs-btns{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;}
+
+/* APP WRAPPER — hidden until fullscreen confirmed */
+#app{display:none;width:100%;min-height:100vh;}
+
+/* FLOATING TOPBAR */
+#topbar{
+  position:fixed;top:0;left:0;right:0;height:44px;z-index:500;
+  background:var(--navy);display:flex;align-items:center;
+  justify-content:space-between;padding:0 16px;
+  box-shadow:0 2px 10px rgba(0,0,0,.25);
+}
+#topbar .tb-left{display:flex;align-items:center;gap:10px;}
+#topbar .tb-brand{font-family:'DM Serif Display',serif;font-size:15px;color:var(--gold);}
+.tb-btn{
+  background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);
+  color:#fff;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:600;
+  padding:5px 14px;border-radius:100px;cursor:pointer;transition:all .2s;
+  display:flex;align-items:center;gap:6px;
+}
+.tb-btn:hover{background:rgba(255,255,255,.15);}
+.tb-btn.danger{border-color:rgba(192,57,43,.5);color:#ff7b7b;}
+.tb-btn.danger:hover{background:rgba(192,57,43,.2);}
+
+/* ALL SCREENS */
+.screen{display:none;min-height:100vh;padding-top:44px;}
+.screen.active{display:flex;flex-direction:column;}
+
+/* WELCOME */
+#screen-welcome{
+  background:var(--navy);align-items:center;justify-content:center;
+  padding:60px 20px 40px;text-align:center;
+}
+.welcome-badge{
+  background:rgba(201,168,76,.15);border:1px solid var(--gold);
+  color:var(--gold-light);font-size:11px;font-weight:600;letter-spacing:2px;
+  text-transform:uppercase;padding:6px 18px;border-radius:100px;
+  margin-bottom:24px;display:inline-block;
+}
+.welcome-title{font-family:'DM Serif Display',serif;font-size:clamp(28px,7vw,50px);color:#fff;line-height:1.15;margin-bottom:14px;}
+.welcome-title span{color:var(--gold);}
+.welcome-sub{color:rgba(255,255,255,.6);font-size:14px;max-width:400px;margin:0 auto 32px;line-height:1.7;}
+
+/* MODE SELECTOR */
+.mode-section{max-width:560px;width:100%;margin:0 auto 32px;}
+.mode-title{font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,.4);margin-bottom:14px;}
+.mode-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.mode-card{
+  background:rgba(255,255,255,.05);border:1.5px solid rgba(255,255,255,.1);
+  border-radius:var(--radius);padding:16px 14px;cursor:pointer;
+  transition:all .2s;text-align:left;
+}
+.mode-card:hover{border-color:rgba(201,168,76,.4);background:rgba(201,168,76,.06);}
+.mode-card.selected{border-color:var(--gold);background:rgba(201,168,76,.1);}
+.mode-card .mc-icon{font-size:20px;margin-bottom:8px;}
+.mode-card .mc-name{font-size:13px;font-weight:600;color:#fff;margin-bottom:3px;}
+.mode-card .mc-detail{font-size:11px;color:rgba(255,255,255,.45);}
+.mode-full{grid-column:1/-1;}
+
+.btn-primary{
+  background:var(--gold);color:var(--navy);border:none;
+  padding:15px 44px;font-family:'DM Sans',sans-serif;font-size:15px;
+  font-weight:700;border-radius:100px;cursor:pointer;transition:all .2s;
+}
+.btn-primary:hover{background:var(--gold-light);transform:translateY(-1px);}
+.btn-primary:disabled{opacity:.4;cursor:not-allowed;transform:none;}
+
+/* TEST HEADER */
+.test-header{
+  background:var(--navy);padding:12px 20px;
+  display:flex;align-items:center;justify-content:space-between;gap:12px;
+  position:sticky;top:44px;z-index:100;box-shadow:0 2px 12px rgba(0,0,0,.2);
+}
+.test-header-left{display:flex;flex-direction:column;}
+.test-section-name{font-size:10px;color:var(--gold);font-weight:700;letter-spacing:1.5px;text-transform:uppercase;}
+.test-question-info{font-size:12px;color:rgba(255,255,255,.6);margin-top:2px;}
+.timer-wrap{
+  display:flex;align-items:center;gap:7px;
+  background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);
+  border-radius:100px;padding:7px 14px;
+}
+.timer-label{font-size:10px;color:rgba(255,255,255,.45);letter-spacing:1px;}
+.timer-value{font-family:'DM Serif Display',serif;font-size:19px;color:#fff;min-width:40px;text-align:center;}
+.timer-value.danger{color:#ff6b6b;}
+.progress-bar-wrap{height:3px;background:rgba(255,255,255,.08);}
+.progress-bar-fill{height:3px;background:var(--gold);transition:width .3s;}
+
+/* TEST BODY */
+.test-body{flex:1;padding:24px 16px 60px;max-width:660px;margin:0 auto;width:100%;}
+
+/* QUESTION CARD */
+.question-card{background:#fff;border-radius:16px;padding:24px 20px;box-shadow:var(--shadow);margin-bottom:18px;}
+.question-num{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--gold);margin-bottom:12px;}
+.question-text{font-size:16px;line-height:1.8;color:var(--text);}
+.blank-input{
+  display:inline-block;border:none;border-bottom:2.5px solid var(--navy);
+  background:transparent;font-family:'DM Sans',sans-serif;font-size:16px;
+  color:var(--navy);width:130px;padding:2px 6px;outline:none;
+  transition:border-color .2s;text-align:center;
+}
+.blank-input:focus{border-color:var(--gold);}
+
+/* DICTATION */
+.flash-box{background:var(--navy);border-radius:14px;padding:28px 20px;text-align:center;margin-bottom:18px;}
+.flash-sentence{
+  font-family:'DM Serif Display',serif;font-size:clamp(15px,3.5vw,20px);
+  color:#fff;line-height:1.6;min-height:72px;
+  display:flex;align-items:center;justify-content:center;
+}
+.flash-hidden{visibility:hidden;}
+.audio-play-btn{
+  background:var(--gold);color:var(--navy);border:none;
+  padding:10px 28px;border-radius:100px;font-family:'DM Sans',sans-serif;
+  font-size:13px;font-weight:700;cursor:pointer;margin-bottom:14px;
+  display:inline-flex;align-items:center;gap:8px;transition:all .2s;
+}
+.audio-play-btn:hover{background:var(--gold-light);}
+.audio-play-btn:disabled{opacity:.4;cursor:not-allowed;}
+.audio-plays-left{font-size:11px;color:rgba(255,255,255,.45);margin-top:6px;}
+.countdown-ring{width:56px;height:56px;margin:0 auto 12px;position:relative;}
+.countdown-ring svg{transform:rotate(-90deg);}
+.countdown-ring .bg{fill:none;stroke:rgba(255,255,255,.1);stroke-width:4;}
+.countdown-ring .fg{fill:none;stroke:var(--gold);stroke-width:4;stroke-linecap:round;transition:stroke-dashoffset .9s linear;}
+.countdown-num{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:17px;font-weight:700;color:var(--gold);}
+.dictation-input{
+  width:100%;background:#fff;border:2px solid var(--cream-dark);
+  border-radius:var(--radius);padding:14px;font-family:'DM Sans',sans-serif;
+  font-size:15px;color:var(--text);resize:none;outline:none;
+  min-height:72px;transition:border-color .2s;
+}
+.dictation-input:focus{border-color:var(--navy);}
+
+/* PASSAGE */
+.passage-view-box{background:var(--navy);border-radius:14px;padding:24px 20px;margin-bottom:18px;}
+.passage-view-text{font-size:14px;line-height:1.85;color:rgba(255,255,255,.9);}
+.passage-status{font-size:11px;color:var(--gold);font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:10px;}
+.passage-reconstruct textarea{
+  width:100%;background:#fff;border:2px solid var(--cream-dark);
+  border-radius:var(--radius);padding:14px;font-family:'DM Sans',sans-serif;
+  font-size:15px;color:var(--text);resize:none;outline:none;
+  min-height:150px;transition:border-color .2s;line-height:1.7;
+}
+.passage-reconstruct textarea:focus{border-color:var(--navy);}
+.word-count{font-size:11px;color:var(--text-muted);margin-top:5px;text-align:right;}
+
+/* EMAIL */
+.email-prompt-box{background:#fff;border:1.5px solid var(--cream-dark);border-radius:var(--radius);padding:18px;margin-bottom:14px;}
+.email-prompt-label{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--gold);margin-bottom:8px;}
+.email-prompt-text{font-size:14px;line-height:1.7;color:var(--text);}
+.keywords-row{display:flex;flex-wrap:wrap;gap:7px;margin-top:10px;}
+.keyword-pill{background:rgba(15,31,61,.07);border:1px solid rgba(15,31,61,.15);color:var(--navy);font-size:11px;font-weight:600;padding:3px 11px;border-radius:100px;}
+.keyword-pill.used{background:rgba(26,107,60,.1);border-color:rgba(26,107,60,.3);color:var(--success);}
+.email-textarea{
+  width:100%;background:#fff;border:2px solid var(--cream-dark);
+  border-radius:var(--radius);padding:14px;font-family:'DM Sans',sans-serif;
+  font-size:14px;color:var(--text);resize:none;outline:none;
+  min-height:240px;transition:border-color .2s;line-height:1.75;
+}
+.email-textarea:focus{border-color:var(--navy);}
+.email-stats{display:flex;justify-content:space-between;font-size:11px;color:var(--text-muted);margin-top:5px;}
+.email-stats .warn{color:var(--danger);font-weight:700;}
+
+/* NAV BUTTONS */
+.test-nav{display:flex;justify-content:flex-end;gap:10px;margin-top:18px;}
+.btn-next{
+  background:var(--navy);color:#fff;border:none;
+  padding:13px 32px;font-family:'DM Sans',sans-serif;font-size:14px;
+  font-weight:600;border-radius:100px;cursor:pointer;transition:all .2s;
+}
+.btn-next:hover{background:var(--navy-light);}
+.btn-submit-section{
+  background:var(--gold);color:var(--navy);border:none;
+  padding:13px 32px;font-family:'DM Sans',sans-serif;font-size:14px;
+  font-weight:700;border-radius:100px;cursor:pointer;transition:all .2s;
+}
+.btn-submit-section:hover{background:var(--gold-light);}
+
+/* TRANSITION */
+.trans-screen{
+  background:var(--navy);align-items:center;justify-content:center;
+  padding:80px 20px 40px;text-align:center;
+}
+.transition-icon{font-size:44px;margin-bottom:16px;}
+.transition-title{font-family:'DM Serif Display',serif;font-size:30px;color:#fff;margin-bottom:10px;}
+.transition-sub{color:rgba(255,255,255,.6);font-size:14px;margin-bottom:28px;max-width:360px;}
+.next-section-info{
+  background:rgba(201,168,76,.1);border:1px solid rgba(201,168,76,.25);
+  border-radius:var(--radius);padding:18px 24px;margin-bottom:24px;
+  text-align:left;max-width:340px;
+}
+.nsi-label{font-size:10px;color:var(--gold);font-weight:700;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:5px;}
+.nsi-name{font-size:17px;color:#fff;font-weight:600;}
+.nsi-detail{font-size:12px;color:rgba(255,255,255,.5);margin-top:3px;}
+
+/* RESULTS */
+#screen-results{background:var(--cream);padding-bottom:60px;}
+.results-hero{background:var(--navy);padding:36px 20px 48px;text-align:center;}
+.results-hero-label{font-size:10px;color:var(--gold);font-weight:700;letter-spacing:2px;text-transform:uppercase;margin-bottom:14px;}
+.results-total{font-family:'DM Serif Display',serif;font-size:clamp(54px,14vw,80px);color:#fff;line-height:1;}
+.results-total span{color:var(--gold);font-size:.44em;vertical-align:top;margin-top:12px;display:inline-block;}
+.results-grade{display:inline-block;margin-top:10px;padding:5px 18px;border-radius:100px;font-size:13px;font-weight:700;}
+.results-section-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;max-width:460px;margin:20px auto 0;}
+.results-section-card{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);border-radius:var(--radius);padding:14px;text-align:left;}
+.rsc-name{font-size:10px;color:rgba(255,255,255,.45);letter-spacing:1px;text-transform:uppercase;margin-bottom:5px;}
+.rsc-score{font-family:'DM Serif Display',serif;font-size:26px;color:#fff;}
+.rsc-score em{font-size:13px;font-style:normal;color:rgba(255,255,255,.35);}
+.results-detail{padding:24px 16px;max-width:680px;margin:0 auto;}
+.detail-section{margin-bottom:28px;}
+.detail-section-title{font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--navy);border-bottom:2px solid var(--navy);padding-bottom:7px;margin-bottom:14px;}
+.answer-row{display:flex;gap:10px;padding:10px 0;border-bottom:1px solid var(--cream-dark);align-items:flex-start;}
+.answer-row:last-child{border-bottom:none;}
+.answer-q{flex:1;font-size:13px;line-height:1.6;color:var(--text);}
+.answer-badge{font-size:11px;font-weight:700;padding:3px 9px;border-radius:100px;white-space:nowrap;flex-shrink:0;}
+.badge-correct{background:rgba(26,107,60,.1);color:var(--success);}
+.badge-wrong{background:rgba(192,57,43,.1);color:var(--danger);}
+.badge-partial{background:rgba(201,168,76,.15);color:#8a6a10;}
+.answer-correct-text{font-size:11px;color:var(--success);margin-top:3px;font-weight:600;}
+.answer-user-text{font-size:11px;color:var(--danger);margin-top:2px;}
+.passage-result-card{background:#fff;border-radius:var(--radius);padding:18px;margin-bottom:14px;box-shadow:var(--shadow);}
+.prc-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;}
+.prc-title{font-size:13px;font-weight:600;color:var(--navy);}
+.prc-score{font-family:'DM Serif Display',serif;font-size:20px;color:var(--navy);}
+.prc-label{font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);margin-bottom:5px;}
+.prc-text{font-size:13px;line-height:1.7;color:var(--text);background:var(--cream);border-radius:8px;padding:10px;}
+.email-result-card{background:#fff;border-radius:var(--radius);padding:18px;box-shadow:var(--shadow);}
+.email-result-stat{display:flex;justify-content:space-between;font-size:13px;padding:7px 0;border-bottom:1px solid var(--cream-dark);color:var(--text);}
+.email-result-stat:last-child{border-bottom:none;}
+.email-result-stat .val{font-weight:700;}
+.val-good{color:var(--success);}
+.val-bad{color:var(--danger);}
+.restart-wrap{text-align:center;padding:20px;}
+
+/* END SESSION MODAL */
+#end-modal{
+  display:none;position:fixed;inset:0;z-index:800;
+  background:rgba(0,0,0,.7);align-items:center;justify-content:center;padding:20px;
+}
+#end-modal.open{display:flex;}
+.end-modal-card{
+  background:var(--navy);border:1px solid rgba(255,255,255,.15);
+  border-radius:20px;padding:32px 28px;max-width:400px;width:100%;text-align:center;
+}
+.end-modal-card h3{font-family:'DM Serif Display',serif;font-size:24px;color:#fff;margin-bottom:10px;}
+.end-modal-card p{color:rgba(255,255,255,.6);font-size:14px;margin-bottom:24px;line-height:1.6;}
+.end-modal-btns{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;}
+
+/* COPY NOTICE */
+#copy-notice{
+  position:fixed;bottom:80px;left:50%;transform:translateX(-50%);
+  background:var(--danger);color:#fff;padding:10px 22px;
+  border-radius:100px;font-size:13px;font-weight:700;z-index:9999;
+  display:none;box-shadow:0 4px 20px rgba(192,57,43,.4);
+}
+
+/* ===== AMAN JHA FOOTER ===== */
+#aman-footer{
+  position:fixed;bottom:0;left:0;right:0;z-index:400;
+  display:flex;justify-content:center;padding:8px 16px;
+  pointer-events:none;
+}
+.aman-btn{
+  pointer-events:all;
+  background:rgba(15,31,61,.92);
+  border:1px solid rgba(201,168,76,.3);
+  border-radius:100px;
+  padding:7px 16px 7px 14px;
+  display:flex;align-items:center;gap:8px;
+  cursor:pointer;
+  font-family:'DM Sans',sans-serif;
+  font-size:11px;
+  color:rgba(255,255,255,.6);
+  transition:all .25s;
+  backdrop-filter:blur(8px);
+  text-decoration:none;
+}
+.aman-btn:hover{border-color:var(--gold);color:#fff;transform:translateY(-2px);box-shadow:0 4px 16px rgba(0,0,0,.3);}
+.aman-btn .aman-name{color:var(--gold);font-weight:600;}
+.chevron{
+  width:14px;height:14px;display:flex;align-items:center;justify-content:center;
+  animation:chevron-pulse 1.4s ease-in-out infinite;
+}
+@keyframes chevron-pulse{0%,100%{transform:translateX(0);opacity:.6;}50%{transform:translateX(3px);opacity:1;}}
+.chevron svg{width:12px;height:12px;stroke:#fff;stroke-width:2.5;fill:none;stroke-linecap:round;stroke-linejoin:round;}
+
+/* PROJECTS PANEL */
+#projects-panel{
+  display:none;position:fixed;bottom:52px;left:50%;transform:translateX(-50%);
+  z-index:600;width:min(380px,94vw);
+  background:var(--navy);border:1px solid rgba(255,255,255,.12);
+  border-radius:16px;padding:20px;
+  box-shadow:0 -4px 32px rgba(0,0,0,.4);
+}
+#projects-panel.open{display:block;}
+#projects-panel h4{font-family:'DM Serif Display',serif;font-size:17px;color:#fff;margin-bottom:4px;}
+#projects-panel .pp-sub{font-size:11px;color:rgba(255,255,255,.4);margin-bottom:16px;}
+.pp-section-title{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--gold);margin-bottom:8px;margin-top:14px;}
+.pp-section-title:first-of-type{margin-top:0;}
+.pp-link{
+  display:flex;align-items:center;gap:10px;padding:9px 12px;
+  border-radius:9px;text-decoration:none;color:rgba(255,255,255,.75);
+  font-size:13px;transition:all .2s;margin-bottom:4px;
+  background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.06);
+}
+.pp-link:hover{background:rgba(201,168,76,.1);border-color:rgba(201,168,76,.25);color:#fff;}
+.pp-link .pp-icon{font-size:16px;flex-shrink:0;}
+.pp-close{
+  width:100%;margin-top:14px;background:rgba(255,255,255,.06);
+  border:1px solid rgba(255,255,255,.1);color:rgba(255,255,255,.5);
+  font-family:'DM Sans',sans-serif;font-size:12px;padding:8px;
+  border-radius:8px;cursor:pointer;transition:all .2s;
+}
+.pp-close:hover{background:rgba(255,255,255,.1);color:#fff;}
+.pp-overlay{display:none;position:fixed;inset:0;z-index:590;}
+.pp-overlay.open{display:block;}
+
+@media(max-width:480px){
+  .mode-grid{grid-template-columns:1fr 1fr;}
+  .test-body{padding:18px 12px 60px;}
+  .question-card{padding:18px 14px;}
+}
+</style>
+</head>
+<body>
+
+<!-- FULLSCREEN GATE -->
+<div id="fs-overlay">
+  <h2>BPO Assessment Platform</h2>
+  <p>This test runs in full-screen mode to simulate real BPO interview conditions. For the best experience, please enter full-screen.</p>
+  <div class="fs-btns">
+    <button class="btn-primary" onclick="enterFS()">Enter Full-Screen</button>
+    <button style="background:transparent;border:1px solid rgba(255,255,255,.2);color:rgba(255,255,255,.6);padding:13px 28px;border-radius:100px;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:14px;" onclick="skipFS()">Continue without Full-Screen</button>
+  </div>
+  <p style="margin-top:20px;font-size:11px;color:rgba(255,255,255,.3);">You can zoom out anytime using Ctrl − (Windows) or Cmd − (Mac)</p>
+</div>
+
+<!-- TOPBAR -->
+<div id="topbar" style="display:none;">
+  <div class="tb-left">
+    <span class="tb-brand">BPO Assess</span>
+  </div>
+  <div style="display:flex;gap:8px;align-items:center;">
+    <button class="tb-btn" onclick="toggleFS()" id="fs-toggle-btn">⛶ Full-Screen</button>
+    <button class="tb-btn danger" onclick="openEndModal()" id="end-session-btn" style="display:none;">✕ End Session</button>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app">
+
+<!-- WELCOME -->
+<div id="screen-welcome" class="screen active">
+  <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px 20px 40px;background:var(--navy);text-align:center;">
+    <div class="welcome-badge">BPO Communication Test</div>
+    <h1 class="welcome-title">Test Your <span>Communication</span> Skills</h1>
+    <p class="welcome-sub">A complete simulation of real BPO hiring assessments. Choose your mode below.</p>
+
+    <div class="mode-section">
+      <div class="mode-title">Select Test Mode</div>
+      <div class="mode-grid">
+        <div class="mode-card mode-full selected" id="mode-all" onclick="selectMode('all')">
+          <div class="mc-icon">📋</div>
+          <div class="mc-name">Full Assessment</div>
+          <div class="mc-detail">All 4 sections · Complete test</div>
+        </div>
+        <div class="mode-card" id="mode-s1" onclick="selectMode('s1')">
+          <div class="mc-icon">✏️</div>
+          <div class="mc-name">Fill in Blanks</div>
+          <div class="mc-detail">20 questions · 15s each</div>
+        </div>
+        <div class="mode-card" id="mode-s2" onclick="selectMode('s2')">
+          <div class="mc-icon">🎧</div>
+          <div class="mc-name">Dictation</div>
+          <div class="mc-detail">10 sentences · audio + type</div>
+        </div>
+        <div class="mode-card" id="mode-s3" onclick="selectMode('s3')">
+          <div class="mc-icon">📖</div>
+          <div class="mc-name">Passage</div>
+          <div class="mc-detail">5 passages · read + write</div>
+        </div>
+        <div class="mode-card" id="mode-s4" onclick="selectMode('s4')">
+          <div class="mc-icon">📧</div>
+          <div class="mc-name">Email Writing</div>
+          <div class="mc-detail">1 topic · 9 minutes</div>
+        </div>
+      </div>
+    </div>
+
+    <button class="btn-primary" id="start-btn" onclick="showInstructions()">Begin Assessment →</button>
+  </div>
+</div>
+
+<!-- INSTRUCTIONS -->
+<div id="screen-instructions" class="screen">
+  <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px 20px;background:var(--navy);">
+    <div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:20px;padding:30px 26px;max-width:520px;width:100%;">
+      <div style="font-family:'DM Serif Display',serif;font-size:22px;color:#fff;margin-bottom:20px;text-align:center;" id="instr-title">Instructions</div>
+      <div id="instr-content"></div>
+      <div style="text-align:center;margin-top:24px;display:flex;gap:10px;justify-content:center;">
+        <button style="background:transparent;border:1.5px solid rgba(255,255,255,.2);color:rgba(255,255,255,.6);padding:12px 28px;border-radius:100px;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:14px;" onclick="showScreen('screen-welcome')">Back</button>
+        <button class="btn-primary" onclick="startTest()">Start →</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- S1: FILL IN BLANKS -->
+<div id="screen-s1" class="screen">
+  <div class="test-header">
+    <div class="test-header-left">
+      <div class="test-section-name">Section 1 — Fill in the Blanks</div>
+      <div class="test-question-info" id="s1-qinfo">Question 1 of 20</div>
+    </div>
+    <div class="timer-wrap">
+      <div class="timer-label">TIME</div>
+      <div class="timer-value" id="s1-timer">15</div>
+    </div>
+  </div>
+  <div class="progress-bar-wrap"><div class="progress-bar-fill" id="s1-progress" style="width:5%"></div></div>
+  <div class="test-body">
+    <div class="question-card">
+      <div class="question-num" id="s1-qnum">Question 01</div>
+      <div class="question-text" id="s1-qtext"></div>
+    </div>
+    <div class="test-nav">
+      <button class="btn-next" id="s1-next-btn" onclick="s1Next()">Next →</button>
+    </div>
+  </div>
+</div>
+
+<!-- TRANSITION 1→2 -->
+<div id="screen-t1" class="screen trans-screen">
+  <div class="transition-icon">✓</div>
+  <div class="transition-title">Section 1 Complete</div>
+  <div class="transition-sub">Fill in the Blanks done. Get ready for Dictation.</div>
+  <div class="next-section-info"><div class="nsi-label">Next Up</div><div class="nsi-name">Dictation Test</div><div class="nsi-detail">10 sentences · audio plays · 20s to type</div></div>
+  <button class="btn-primary" onclick="startSection2()">Continue →</button>
+</div>
+
+<!-- S2: DICTATION -->
+<div id="screen-s2" class="screen">
+  <div class="test-header">
+    <div class="test-header-left">
+      <div class="test-section-name">Section 2 — Dictation</div>
+      <div class="test-question-info" id="s2-qinfo">Sentence 1 of 10</div>
+    </div>
+    <div class="timer-wrap">
+      <div class="timer-label">TIME</div>
+      <div class="timer-value" id="s2-timer">--</div>
+    </div>
+  </div>
+  <div class="progress-bar-wrap"><div class="progress-bar-fill" id="s2-progress" style="width:10%"></div></div>
+  <div class="test-body">
+    <div class="flash-box">
+      <div id="s2-audio-area">
+        <button class="audio-play-btn" id="s2-play-btn" onclick="s2PlayAudio()">
+          <span>▶</span> Play Audio
+        </button>
+        <div class="audio-plays-left" id="s2-plays-left">2 plays remaining</div>
+        <audio id="s2-audio-el" preload="auto"></audio>
+      </div>
+      <div id="s2-text-area" style="display:none;">
+        <div class="countdown-ring">
+          <svg width="56" height="56" viewBox="0 0 56 56">
+            <circle class="bg" cx="28" cy="28" r="24"/>
+            <circle class="fg" id="s2-ring-fg" cx="28" cy="28" r="24" stroke-dasharray="150.8" stroke-dashoffset="0"/>
+          </svg>
+          <div class="countdown-num" id="s2-ring-num">5</div>
+        </div>
+        <div class="flash-sentence" id="s2-sentence"></div>
+        <div id="s2-phase-label" style="font-size:11px;color:rgba(255,255,255,.4);margin-top:10px;letter-spacing:1px;text-transform:uppercase;">Read carefully</div>
+      </div>
+    </div>
+    <textarea class="dictation-input" id="s2-input" placeholder="Type what you heard..." rows="3" disabled></textarea>
+    <div class="test-nav">
+      <button class="btn-next" id="s2-next-btn" onclick="s2Next()" style="display:none;">Next →</button>
+    </div>
+  </div>
+</div>
+
+<!-- TRANSITION 2→3 -->
+<div id="screen-t2" class="screen trans-screen">
+  <div class="transition-icon">✓</div>
+  <div class="transition-title">Section 2 Complete</div>
+  <div class="transition-sub">Dictation done. Next is Passage Reconstruction.</div>
+  <div class="next-section-info"><div class="nsi-label">Next Up</div><div class="nsi-name">Passage Reconstruction</div><div class="nsi-detail">5 passages · 30s to read · 3 min to write</div></div>
+  <button class="btn-primary" onclick="startSection3()">Continue →</button>
+</div>
+
+<!-- S3: PASSAGE -->
+<div id="screen-s3" class="screen">
+  <div class="test-header">
+    <div class="test-header-left">
+      <div class="test-section-name">Section 3 — Passage Reconstruction</div>
+      <div class="test-question-info" id="s3-qinfo">Passage 1 of 5</div>
+    </div>
+    <div class="timer-wrap">
+      <div class="timer-label">TIME</div>
+      <div class="timer-value" id="s3-timer">30</div>
+    </div>
+  </div>
+  <div class="progress-bar-wrap"><div class="progress-bar-fill" id="s3-progress" style="width:20%"></div></div>
+  <div class="test-body">
+    <div class="passage-view-box" id="s3-view-box">
+      <div class="passage-status" id="s3-phase-label">Read this passage carefully</div>
+      <div class="passage-view-text" id="s3-passage-text"></div>
+    </div>
+    <div class="passage-reconstruct" id="s3-write-area" style="display:none;">
+      <div style="font-size:12px;color:var(--text-muted);margin-bottom:8px;">Reconstruct from memory. Max 100 words.</div>
+      <textarea id="s3-textarea" placeholder="Write the passage in your own words..." rows="6" maxlength="800" oninput="s3WordCount()"></textarea>
+      <div class="word-count" id="s3-wc">0 / 100 words</div>
+    </div>
+    <div class="test-nav">
+      <button class="btn-submit-section" id="s3-next-btn" onclick="s3Next()">Next Passage →</button>
+    </div>
+  </div>
+</div>
+
+<!-- TRANSITION 3→4 -->
+<div id="screen-t3" class="screen trans-screen">
+  <div class="transition-icon">✓</div>
+  <div class="transition-title">Section 3 Complete</div>
+  <div class="transition-sub">Passages done. Final section — Email Writing.</div>
+  <div class="next-section-info"><div class="nsi-label">Final Section</div><div class="nsi-name">Email Writing</div><div class="nsi-detail">1 topic · minimum 180 words · 9 minutes</div></div>
+  <button class="btn-primary" onclick="startSection4()">Continue →</button>
+</div>
+
+<!-- S4: EMAIL -->
+<div id="screen-s4" class="screen">
+  <div class="test-header">
+    <div class="test-header-left">
+      <div class="test-section-name">Section 4 — Email Writing</div>
+      <div class="test-question-info">Write a professional email on the topic below</div>
+    </div>
+    <div class="timer-wrap">
+      <div class="timer-label">TIME</div>
+      <div class="timer-value" id="s4-timer">9:00</div>
+    </div>
+  </div>
+  <div class="progress-bar-wrap"><div class="progress-bar-fill" id="s4-progress" style="width:100%"></div></div>
+  <div class="test-body">
+    <div class="email-prompt-box">
+      <div class="email-prompt-label">Email Topic</div>
+      <div class="email-prompt-text" id="s4-topic"></div>
+      <div class="keywords-row" id="s4-keywords"></div>
+    </div>
+    <textarea class="email-textarea" id="s4-email" placeholder="Begin your email here... (Subject, Salutation, Body, Closing)" oninput="s4Update()"></textarea>
+    <div class="email-stats">
+      <span id="s4-wc-label">Words: 0</span>
+      <span id="s4-min-warn"></span>
+    </div>
+    <div class="test-nav" style="margin-top:14px;">
+      <button class="btn-submit-section" onclick="submitEmail()">Submit Email</button>
+    </div>
+  </div>
+</div>
+
+<!-- RESULTS -->
+<div id="screen-results" class="screen">
+  <div class="results-hero">
+    <div class="results-hero-label">Assessment Complete</div>
+    <div class="results-total" id="res-total">0 <span>/ 80</span></div>
+    <div class="results-grade" id="res-grade"></div>
+    <div class="results-section-grid" id="res-section-grid"></div>
+  </div>
+  <div class="results-detail" id="results-detail"></div>
+  <div class="restart-wrap">
+    <button class="btn-primary" style="background:var(--navy);color:#fff;" onclick="restartTest()">Take Test Again</button>
+  </div>
+</div>
+
+</div><!-- end #app -->
+
+<!-- END SESSION MODAL -->
+<div id="end-modal">
+  <div class="end-modal-card">
+    <h3>End Session?</h3>
+    <p>Your current progress will be scored and results will be shown for all completed sections.</p>
+    <div class="end-modal-btns">
+      <button style="background:transparent;border:1.5px solid rgba(255,255,255,.2);color:rgba(255,255,255,.6);padding:12px 24px;border-radius:100px;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:14px;" onclick="closeEndModal()">Continue Test</button>
+      <button class="btn-primary" style="background:var(--danger);color:#fff;" onclick="forceEndSession()">End &amp; Get Results</button>
+    </div>
+  </div>
+</div>
+
+<!-- COPY NOTICE -->
+<div id="copy-notice">⚠ Copy &amp; paste is not allowed</div>
+
+<!-- PROJECTS PANEL OVERLAY -->
+<div class="pp-overlay" id="pp-overlay" onclick="closePP()"></div>
+
+<!-- PROJECTS PANEL -->
+<div id="projects-panel">
+  <h4>Aman Kr. Jha</h4>
+  <div class="pp-sub">Frontend Developer — Let's Connect</div>
+
+  <div class="pp-section-title">Contacts</div>
+  <a class="pp-link" href="https://www.linkedin.com/in/aman-kumar-jha-036a06347/?skipRedirect=true" target="_blank" rel="noopener">
+    <span class="pp-icon"></span>Linkedin
+  </a>
+  <a class="pp-link" href="https://wa.me/917079881254" target="_blank" rel="noopener">
+    <span class="pp-icon"></span> Whatsapp
+  </a>
+  <a class="pp-link" href="https://www.instagram.com/amankrjha77/" target="_blank" rel="noopener">
+    <span class="pp-icon"></span> Instagram
+  </a>
+   <a class="pp-link" href="mailto:amankrjha77@gmail.com">
+    <span class="pp-icon"></span>amankrjha77@gmail.com
+  </a>
+
+  
+
+  <button class="pp-close" onclick="closePP()">Close ✕</button>
+</div>
+
+<!-- AMAN FOOTER -->
+<div id="aman-footer">
+  <div class="aman-btn" onclick="togglePP()">
+    <span>Designed &amp; Developed by <span class="aman-name">Aman Jha</span></span>
+    <div class="chevron">
+      <svg viewBox="0 0 12 12"><polyline points="2,4 6,8 10,4"/></svg>
+    </div>
+   
+  </div>
+</div>
+
+<script>
+// ============================================================
+// DATA
+// ============================================================
+const ALL_FILL=[
+  {q:"She was awarded a promotion based on her excellent _____ on the job.",a:["performance"]},
+  {q:"If you want to meet with the CEO, you need to make an _____ in advance.",a:["appointment"]},
+  {q:"In cities with good public _____ it is hard to understand why people insist on driving to work.",a:["transport","transportation"]},
+  {q:"I am not sure if I can come tomorrow, I will have to _____ my schedule.",a:["check"]},
+  {q:"To _____ our first major success, we are going to throw a party.",a:["celebrate"]},
+  {q:"For _____ about the product please consult the instruction manual.",a:["details","information"]},
+  {q:"The store had only been in business for two years, when the _____ sold it.",a:["owner"]},
+  {q:"Over 300 people _____ the store's grand opening.",a:["attended"]},
+  {q:"The class had to be _____ indefinitely because of the summer schedule.",a:["postponed"]},
+  {q:"Please make sure all seatbelts are securely _____.",a:["fastened"]},
+  {q:"I had to take out a _____ from the bank to cover the cost of replacing the roof.",a:["loan"]},
+  {q:"He _____ old items and brings them back to usable condition.",a:["repairs","mends"]},
+  {q:"Every summer, the neighboring town hosts a big event, which _____ hundreds of people.",a:["attracts"]},
+  {q:"I _____ my clothes off at the drycleaners on my way to work this morning.",a:["dropped"]},
+  {q:"Now that the project has reached _____, everything I had to do is finished.",a:["completion"]},
+  {q:"He is running _____. He should have been here half an hour ago.",a:["late"]},
+  {q:"Workers who have previously completed the training are _____ from the new training requirement.",a:["exempted"]},
+  {q:"The employees of our factory must follow strict safety _____.",a:["guidelines"]},
+  {q:"If you want a hardworking and dependable employee, I _____ that you hire him.",a:["recommend"]},
+  {q:"When you travel abroad you need to carry your passport or some form of _____.",a:["identification"]},
+  {q:"When my bicycle got a flat _____ I had to take a train to work.",a:["tyre","tire"]},
+  {q:"You need a parking _____ if you want to leave your car here.",a:["ticket"]},
+  {q:"This is cutting _____ technology — it's the best on the market.",a:["edge"]},
+  {q:"The police have been _____ the activity at that house for two months.",a:["monitoring"]},
+  {q:"A good policy is to always _____ to customer requests within 24 hours.",a:["respond"]},
+  {q:"The company _____ its target last year and reported a profit.",a:["exceeded"]},
+  {q:"Please check all envelopes for the correct return _____.",a:["address"]},
+  {q:"My sister is _____ from the surgery very well.",a:["recovering"]},
+  {q:"If you don't _____ the height requirement you are not allowed to get on the ride.",a:["meet"]},
+  {q:"She gets her supplies at a _____ rate because she buys in bulk.",a:["reasonable"]},
+  {q:"Don't forget to _____ for a receipt when you pay.",a:["ask"]},
+  {q:"I wanted to buy the book but the bookstore did not have any in _____.",a:["stock"]},
+  {q:"Thank you very much for your help on such short _____, it helped us when time was running short.",a:["notice"]},
+  {q:"The amount of air pollution has increased substantially _____ the factory opened.",a:["since","after"]},
+  {q:"The residents were advised to evacuate their homes _____ the storm reached them.",a:["before"]},
+  {q:"She was a junior manager but now she has been _____ to a senior management position.",a:["promoted"]},
+  {q:"The city building height will _____ on local regulations.",a:["depend"]},
+  {q:"An increasing _____ of businesses have recently shut down due to the economic downturn.",a:["number"]},
+  {q:"We offer our customers the _____ of placing orders by phone or online.",a:["option"]},
+  {q:"Television owners pay an annual license _____.",a:["fee"]},
+  {q:"Before you drive over a bridge you have to pay the _____ at the booth.",a:["toll"]},
+  {q:"The money was _____ among several people.",a:["divided","distributed"]},
+  {q:"All the _____ behind my desk are tangled.",a:["wires"]},
+  {q:"I made several _____ to the store before I remembered to buy paper towels.",a:["trips"]},
+  {q:"My flight departed late but arrived on _____ at the destination.",a:["time"]},
+  {q:"The man _____ his car keys and spent an hour looking for them.",a:["misplaced","lost"]},
+  {q:"You need to make an appointment weeks in _____ to meet the CEO.",a:["advance"]},
+  {q:"Recent studies show shopping _____ of consumers have changed dramatically.",a:["preference","preferences"]},
+  {q:"Give regards _____ Anna and the kids.",a:["to"]},
+  {q:"You can _____ the order as soon as you know what you want to purchase.",a:["place"]}
+];
+
+// DICTATION — audio files go here when ready
+// Format: {text:"sentence", audio:"path/to/file.mp3"}
+// If audio is null, falls back to flash text mode
+const ALL_DICT=[
+  {text:"Don't we have her address on file?",audio:"./1.mp3"},
+  {text:"Where are the pens we use to write on the board?",audio:"./2.mp3"},
+  {text:"It's a good idea to create different versions of your resume.",audio:"./3.mp3"},
+  {text:"We report any computer issue to technical support.",audio:"./4.mp3"},
+  {text:"It's important to follow up after a job interview.",audio:"./5.mp3"},
+  {text:"What if I caught a later train?",audio:"./6.mp3"},
+  {text:"I will be back in the middle of September.",audio:"./7.mp3"},
+  {text:"I hope he doesn't get there late.",audio:"./8.mp3"},
+  {text:"Wouldn't it be easier to do this online?",audio:"./9.mp3"},
+  {text:"The plan will be drawn up tomorrow morning when everyone is together.",audio:"./10.mp3"},
+  {text:"They are concerned not only with the cost but also with the competition.",audio:"./11.mp3"},
+  {text:"Please note that our phone and fax number will remain the same.",audio:"./12.mp3"},
+  {text:"Please spell check all reports before turning them in.",audio:"./13.mp3"},
+  {text:"Every year your supervisor will evaluate your progress.",audio:"./14.mp3"},
+  {text:"Please notify your supervisor if you are running late.",audio:"./15.mp3"},
+  {text:"Could you tell me how many people are coming to the reception?",audio:"./16.mp3"},
+  {text:"I am leaving in early June.",audio:"./17.mp3"},
+  {text:"I will be finished by Friday.",audio:"./18.mp3"},
+  {text:"We're breaking for lunch.",audio:"./19.mp3"},
+  {text:"The document needs to be edited.",audio:"./20.mp3"},
+  {text:"Eric filled out the form by hand because the system was down.",audio:"./21.mp3"},
+  {text:"Why didn't you ask him to leave a message?",audio:"./22.mp3"},
+  {text:"Many have seen their salary cut.",audio:"./23.mp3"},
+  {text:"The company first opened when I was much younger.",audio:"./24.mp3"},
+  {text:"Many companies operate in more than one country.",audio:"./25.mp3"},
+  {text:"They told me I'd have to pay before the class begins.",audio:"./26.mp3"},
+  {text:"I can book us a table at a good Italian restaurant.",audio:"./27.mp3"},
+  {text:"The company has grown too large over the past few years.",audio:"./28.mp3"},
+  {text:"I wish you had raised the issue earlier.",audio:"./29.mp3"},
+  {text:"Let's come up with a cost-effective solution.",audio:"./30.mp3"},
+  {text:"There are various tax incentives available to you and your employees.",audio:"./31.mp3"},
+  {text:"David is taking next week off to travel with his family.",audio:"./32.mp3"},
+  {text:"Sales of new vehicles have been up this month.",audio:"./33.mp3"},
+  {text:"They are in the Middle East.",audio:"./34.mp3"},
+  {text:"Please reply to this email if you are attending the seminar.",audio:"./35.mp3"},
+  {text:"Inflation affects all small businesses.",audio:"./36.mp3"},
+  {text:"What is the balance on the company's credit card?",audio:"./37.mp3"},
+  {text:"The company may have to relocate.",audio:"./38.mp3"},
+  {text:"The proposal is finished.",audio:"./39.mp3"},
+  {text:"When sales were down, we caught up with our filing.",audio:"./40.mp3"},
+  {text:"They presented a plan to reduce a large debt.",audio:"./41.mp3"},
+  {text:"It won't turn around overnight.",audio:"./42.mp3"},
+  {text:"I am going with you, aren't I?",audio:"./43.mp3"},
+  {text:"Thanks for sending the rough draft.",audio:"./44.mp3"},
+  {text:"He would always come late to the meetings.",audio:"./45.mp3"},
+  {text:"The rate of inflation has increased this month.",audio:"./46.mp3"},
+  {text:"Let's put our heads together and come up with a solution.",audio:"./47.mp3"},
+  {text:"The new intern has a lot to learn about this company.",audio:"./48.mp3"},
+  {text:"According to the weather forecast it's going to be really hot this weekend.",audio:"./49.mp3"},
+  {text:"When do you expect him to return to the office?",audio:"./50.mp3"},
+  {text:"I'll have finished the report by then.",audio:"./51.mp3"},
+  {text:"Could you recommend some good hotels?",audio:"./52.mp3"},
+  {text:"We have agreed on all the major points.",audio:"./53.mp3"},
+  {text:"The store plans to hire some temporary employees.",audio:"./54.mp3"},
+  {text:"Speak with my assistant and she will schedule you.",audio:"./55.mp3"},
+  {text:"We need to make sure that our department is ready for inspection.",audio:"./56.mp3"},
+  {text:"I need a hotel near the airport because I am arriving late.",audio:"./57.mp3"},
+  {text:"He stays healthy by eating well and exercising often.",audio:"./58.mp3"},
+  {text:"He forgot to bring money for an admission ticket.",audio:"./59.mp3"},
+  {text:"Employers generally look for strong technical skills.",audio:"./60.mp3"},
+  {text:" I need volunteers for the weekend seminar.",audio:"./61.mp3"},
+  {text:"Where are the colored papers we use to make the brochures? ",audio:"./62.mp3"},
+  {text:"I am doing research, but I can't locate a book I need. ",audio:"./63.mp3"},
+  {text:"The speeding system was just repaired. ",audio:"./64.mp3"}
+ 
+];
+
+const ALL_PASSAGES=[
+  {text:"As I told you at our last meeting, I am moving on to a new position in another company next week. My last working day is Friday, January 25th. Thanks for being such a great team to work with! I will miss you all and hope you will stay in touch.",answer:"The speaker is leaving the company for a new position next week. Their last working day is Friday, January 25th. They thank the team for being great to work with and express that they will miss everyone and hope to stay in touch."},
+  {text:"I'm sorry about all the confusion regarding your pay rate. Unfortunately, our budget has been cut and so we've had to reduce the amount that we can offer. I hope this clears things up but do come back to me if you'd like more information.",answer:"The writer apologizes for the confusion about the pay rate. Due to budget cuts, the offered amount has been reduced. The writer hopes this explanation clears things up and invites the recipient to follow up if they need more information."},
+  {text:"Anna picked up her suit from the dry cleaners. After she had paid, she noticed that the cleaners had not cleaned the suit properly. She politely brought this to their attention, and requested a refund. Although the cleaner apologized, he said that it was not his fault, and refused to give Anna a refund.",answer:"Anna collected her suit from the dry cleaners but found it had not been cleaned properly. She politely raised the issue and asked for a refund. The cleaner apologized but denied responsibility and refused to provide a refund."},
+  {text:"After working for thirty years as a salesperson, James decided to retire. The first few weeks of his retired life were fine. He relaxed and spent a lot of time reading. After a month, he started to get bored. He decided to volunteer at the local animal rescue center. He loved working with the animals, and was glad to have a scheduled activity to do each day.",answer:"James retired after thirty years as a salesperson. He initially enjoyed relaxing and reading, but became bored after a month. He then volunteered at a local animal rescue center, where he found joy in working with animals and appreciated having a daily routine."},
+  {text:"Employees are reminded that the last person to leave the office should make sure that all windows and doors are locked. If you are staying after regular working hours, please walk around to check if anyone else is still in the office. If there is still someone else other than yourself, please let that person know that you are leaving. Thank you for your cooperation in this matter.",answer:"Employees are reminded to ensure all windows and doors are locked when leaving the office. Those staying late should check if others are still present and inform them before leaving. The message thanks employees for their cooperation."}
+];
+
+const ALL_EMAIL_TOPICS=[
+  {topic:"The company you work for has a program to reward outstanding workers. Your co-worker, Anna, has recently finished an important project. Write an email to your manager, Mr. Henderson, recognizing her as an excellent employee.",keywords:["work habits","new ideas","customer satisfaction"],sample:"Dear Mr. Henderson,\n\nI hope this email finds you well. I am writing to nominate Anna for the outstanding employee award following the successful completion of her recent project.\n\nAnna consistently demonstrates excellent work habits, always meeting deadlines and maintaining high-quality output. Her new and innovative ideas have contributed significantly to our team's success. Furthermore, her customer satisfaction scores remain consistently high due to her professional and supportive approach.\n\nI strongly believe she deserves this recognition. Please let me know if you would like to discuss further.\n\nWarm regards,\n[Your Name]"},
+  {topic:"You and your co-workers need to get approval from your supervisor, Mr. Wilson, to organize a company picnic. Write an email explaining why the company should host a picnic for its employees.",keywords:["new employees","team building","extra money"],sample:"Dear Mr. Wilson,\n\nI hope you are doing well. On behalf of the team, I would like to request approval to organize a company picnic.\n\nFirst, it would be an excellent opportunity for new employees to get acquainted with the rest of the team in an informal setting. Second, a picnic would greatly support team building, helping colleagues bond outside the workplace. Finally, the cost would be minimal compared to the boost in morale it would bring.\n\nWe believe this initiative would have a very positive impact on our workplace culture. I look forward to your approval.\n\nBest regards,\n[Your Name]"},
+  {topic:"Your co-worker Thomas has become very busy at work. He sends you an email for advice on how to manage time more effectively. Write a reply suggesting three things he could do.",keywords:["to-do list","task ordered by importance","daily progress review"],sample:"Dear Thomas,\n\nThank you for reaching out. I understand how overwhelming a heavy workload can feel. Here are three strategies that may help.\n\nFirst, start each day by creating a to-do list. Second, arrange your tasks ordered by importance, tackling the most critical items first. Finally, end each day with a brief daily progress review to assess what was accomplished.\n\nI hope these suggestions help. Do not hesitate to reach out if you need further advice.\n\nBest regards,\n[Your Name]"},
+  {topic:"You work in an office which does not have a good security system. Write an email to HR manager Mr. Smith, suggesting ways in which he can improve the security of the organization.",keywords:["identification card","security guard","video monitoring"],sample:"Dear Mr. Smith,\n\nI am writing to share some suggestions to improve the security of our office premises.\n\nTo begin with, I recommend introducing identification cards for all employees and visitors. Additionally, hiring a security guard at the main entrance would add a visible layer of protection. Lastly, installing a video monitoring system at key locations would allow us to monitor activity effectively.\n\nI believe these measures would significantly enhance workplace safety. I would welcome the opportunity to discuss this further.\n\nKind regards,\n[Your Name]"},
+  {topic:"You work for a furniture company. The manager David believes they will not complete a bulk order on time. Write an email suggesting how the team can meet the target.",keywords:["working hours","new equipment","hiring new people"],sample:"Dear David,\n\nThank you for bringing this concern to our attention. I would like to suggest a few measures that could help us meet the target deadline.\n\nFirstly, we could consider extending working hours temporarily to increase daily output. Secondly, investing in new equipment could improve the speed and efficiency of our production line. Finally, hiring new people on a short-term contract basis would increase our workforce capacity.\n\nI am confident that a combination of these approaches will help us fulfill the order on time.\n\nRegards,\n[Your Name]"}
+];
+
+// ============================================================
+// STATE
+// ============================================================
+let selectedMode='all';
+let activeMode='all';
+let state={
+  s1:{questions:[],idx:0,answers:[],timer:null},
+  s2:{sentences:[],idx:0,answers:[],timer:null,playsLeft:2,audioMode:false},
+  s3:{passages:[],idx:0,answers:[],timer:null},
+  s4:{topic:null,answer:'',timer:null},
+  scores:{s1:null,s2:null,s3:null,s4:null},
+  endedEarly:false
+};
+
+function shuffle(a){let b=[...a];for(let i=b.length-1;i>0;i--){let j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]];}return b;}
+function pick(a,n){return shuffle(a).slice(0,n);}
+
+// ============================================================
+// FULLSCREEN
+// ============================================================
+function enterFS(){
+  const el=document.documentElement;
+  const req=el.requestFullscreen||el.webkitRequestFullscreen||el.mozRequestFullScreen||el.msRequestFullscreen;
+  if(req) req.call(el).catch(()=>{});
+  launchApp();
+}
+function skipFS(){launchApp();}
+function launchApp(){
+  document.getElementById('fs-overlay').style.display='none';
+  document.getElementById('app').style.display='block';
+  document.getElementById('topbar').style.display='flex';
+}
+function toggleFS(){
+  if(!document.fullscreenElement){
+    document.documentElement.requestFullscreen&&document.documentElement.requestFullscreen().catch(()=>{});
+    document.getElementById('fs-toggle-btn').textContent='⛶ Exit Full-Screen';
+  } else {
+    document.exitFullscreen&&document.exitFullscreen();
+    document.getElementById('fs-toggle-btn').textContent='⛶ Full-Screen';
+  }
+}
+document.addEventListener('fullscreenchange',()=>{
+  const btn=document.getElementById('fs-toggle-btn');
+  if(btn) btn.textContent=document.fullscreenElement?'⛶ Exit Full-Screen':'⛶ Full-Screen';
+});
+
+// ============================================================
+// MODE SELECTION
+// ============================================================
+function selectMode(m){
+  selectedMode=m;
+  document.querySelectorAll('.mode-card').forEach(c=>c.classList.remove('selected'));
+  document.getElementById('mode-'+m).classList.add('selected');
+}
+
+// ============================================================
+// NAVIGATION
+// ============================================================
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0,0);
+}
+
+// ============================================================
+// INSTRUCTIONS
+// ============================================================
+const INSTR={
+  all:`<div style="display:flex;flex-direction:column;gap:12px;">
+    ${instrRow('1','Fill in the Blanks','20 questions · 15 seconds each · auto-submits')}
+    ${instrRow('2','Dictation','Audio plays · type what you hear · 20s to type')}
+    ${instrRow('3','Passage Reconstruction','30s to read · 3 min to write · max 100 words')}
+    ${instrRow('4','Email Writing','1 topic · 9 minutes · minimum 180 words')}
+    ${instrRow('!','Important','No copy-paste · do not switch tabs')}
+  </div>`,
+  s1:`<div style="display:flex;flex-direction:column;gap:12px;">${instrRow('✏️','Fill in the Blanks','20 questions, 15 seconds each. Type the missing word. Auto-submits when time runs out.')}${instrRow('!','Important','No copy-paste allowed.')}</div>`,
+  s2:`<div style="display:flex;flex-direction:column;gap:12px;">${instrRow('🎧','Dictation','Audio plays. Listen carefully. You have 20 seconds to type the sentence from memory. You can play each audio twice.')}${instrRow('!','Important','No copy-paste allowed.')}</div>`,
+  s3:`<div style="display:flex;flex-direction:column;gap:12px;">${instrRow('📖','Passage Reconstruction','Read the passage for 30 seconds. Then reconstruct it from memory in 3 minutes. Maximum 100 words.')}${instrRow('!','Important','No copy-paste allowed.')}</div>`,
+  s4:`<div style="display:flex;flex-direction:column;gap:12px;">${instrRow('📧','Email Writing','Write a professional email on the given topic. Minimum 180 words. 9 minutes total. Include keywords shown.')}${instrRow('!','Important','No copy-paste allowed.')}</div>`
+};
+function instrRow(n,title,desc){
+  return `<div style="display:flex;gap:14px;align-items:flex-start;padding:12px 0;border-bottom:1px solid rgba(255,255,255,.07);">
+    <div style="width:32px;height:32px;border-radius:50%;background:rgba(201,168,76,.15);border:1px solid rgba(201,168,76,.3);color:var(--gold);font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;">${n}</div>
+    <div><div style="font-size:14px;font-weight:600;color:#fff;margin-bottom:3px;">${title}</div><div style="font-size:12px;color:rgba(255,255,255,.5);line-height:1.5;">${desc}</div></div>
+  </div>`;
+}
+
+function showInstructions(){
+  document.getElementById('instr-title').textContent = selectedMode==='all'?'Instructions':`Instructions — ${modeName(selectedMode)}`;
+  document.getElementById('instr-content').innerHTML = INSTR[selectedMode]||INSTR.all;
+  showScreen('screen-instructions');
+}
+function modeName(m){return{s1:'Fill in Blanks',s2:'Dictation',s3:'Passage',s4:'Email Writing'}[m]||'Full Test';}
+
+// ============================================================
+// START TEST
+// ============================================================
+function startTest(){
+  activeMode=selectedMode;
+  clearAllTimers();
+  state={
+    s1:{questions:[],idx:0,answers:[],timer:null},
+    s2:{sentences:[],idx:0,answers:[],timer:null,playsLeft:2,audioMode:false},
+    s3:{passages:[],idx:0,answers:[],timer:null},
+    s4:{topic:null,answer:'',timer:null},
+    scores:{s1:null,s2:null,s3:null,s4:null},
+    endedEarly:false
+  };
+  document.getElementById('end-session-btn').style.display='flex';
+
+  if(activeMode==='all'||activeMode==='s1'){
+    state.s1.questions=pick(ALL_FILL,20);
+    showScreen('screen-s1'); s1Render();
+  } else if(activeMode==='s2'){
+    state.s2.sentences=pick(ALL_DICT,10);
+    showScreen('screen-s2'); s2Render();
+  } else if(activeMode==='s3'){
+    state.s3.passages=pick(ALL_PASSAGES,5);
+    showScreen('screen-s3'); s3Render();
+  } else if(activeMode==='s4'){
+    state.s4.topic=ALL_EMAIL_TOPICS[Math.floor(Math.random()*ALL_EMAIL_TOPICS.length)];
+    showScreen('screen-s4'); s4Start();
+  }
+}
+
+function clearAllTimers(){
+  clearInterval(state.s1&&state.s1.timer);
+  clearInterval(state.s2&&state.s2.timer);
+  clearInterval(state.s3&&state.s3.timer);
+  clearInterval(state.s4&&state.s4.timer);
+}
+
+// ============================================================
+// END SESSION EARLY
+// ============================================================
+function openEndModal(){document.getElementById('end-modal').classList.add('open');}
+function closeEndModal(){document.getElementById('end-modal').classList.remove('open');}
+function forceEndSession(){
+  closeEndModal();
+  clearAllTimers();
+  state.endedEarly=true;
+  // save current textarea if on s3
+  const cur=document.querySelector('.screen.active');
+  if(cur&&cur.id==='screen-s3'){
+    const ta=document.getElementById('s3-textarea');
+    if(ta&&state.s3.answers.length<=state.s3.idx) state.s3.answers.push(ta.value.trim());
+  }
+  if(cur&&cur.id==='screen-s4'){
+    state.s4.answer=document.getElementById('s4-email').value;
+  }
+  calculateScores();
+  showResults();
+}
+
+// ============================================================
+// ANTI-CHEAT
+// ============================================================
+document.addEventListener('copy',e=>{e.preventDefault();showCopyNotice();});
+document.addEventListener('cut',e=>{e.preventDefault();showCopyNotice();});
+document.addEventListener('paste',e=>{e.preventDefault();showCopyNotice();});
+document.addEventListener('contextmenu',e=>e.preventDefault());
+function showCopyNotice(){
+  const n=document.getElementById('copy-notice');
+  n.style.display='block';
+  setTimeout(()=>n.style.display='none',2500);
+}
+
+// ============================================================
+// SECTION 1 — FILL IN BLANKS
+// ============================================================
+function s1Render(){
+  const{questions,idx}=state.s1;
+  const q=questions[idx];
+  document.getElementById('s1-qinfo').textContent=`Question ${idx+1} of 20`;
+  document.getElementById('s1-qnum').textContent=`Question ${String(idx+1).padStart(2,'0')}`;
+  const parts=q.q.split('_____');
+  let html='';
+  if(parts.length===2){
+    html=esc(parts[0])+`<input class="blank-input" id="s1-input" type="text" autocomplete="off" autocorrect="off" spellcheck="false" placeholder="...">`+esc(parts[1]);
+  } else html=esc(q.q);
+  document.getElementById('s1-qtext').innerHTML=html;
+  document.getElementById('s1-progress').style.width=((idx+1)/20*100)+'%';
+  const btn=document.getElementById('s1-next-btn');
+  btn.textContent=idx===19?'Finish Section ✓':'Next →';
+  s1StartTimer();
+  const inp=document.getElementById('s1-input');
+  if(inp){setTimeout(()=>inp.focus(),50);inp.addEventListener('keydown',e=>{if(e.key==='Enter')s1Next();});}
+}
+function s1StartTimer(){
+  clearInterval(state.s1.timer);
+  let t=15;
+  const el=document.getElementById('s1-timer');
+  el.classList.remove('danger');el.textContent=t;
+  state.s1.timer=setInterval(()=>{
+    t--;el.textContent=t;
+    if(t<=5)el.classList.add('danger');
+    if(t<=0){clearInterval(state.s1.timer);s1Next(true);}
+  },1000);
+}
+function s1Next(auto=false){
+  clearInterval(state.s1.timer);
+  const inp=document.getElementById('s1-input');
+  state.s1.answers.push(inp?inp.value.trim().toLowerCase():'');
+  state.s1.idx++;
+  if(state.s1.idx<20) s1Render();
+  else {
+    if(activeMode==='s1'){calculateScores();showResults();}
+    else{state.s2.sentences=pick(ALL_DICT,10);showScreen('screen-t1');}
+  }
+}
+
+// ============================================================
+// SECTION 2 — DICTATION
+// ============================================================
+function startSection2(){showScreen('screen-s2');s2Render();}
+function s2Render(){
+  const{sentences,idx}=state.s2;
+  const item=sentences[idx];
+  document.getElementById('s2-qinfo').textContent=`Sentence ${idx+1} of 10`;
+  document.getElementById('s2-progress').style.width=((idx+1)/10*100)+'%';
+  const inp=document.getElementById('s2-input');
+  inp.value='';inp.disabled=true;
+  document.getElementById('s2-next-btn').style.display='none';
+  document.getElementById('s2-timer').textContent='--';
+  document.getElementById('s2-timer').classList.remove('danger');
+  state.s2.playsLeft=2;
+
+  const hasAudio=item.audio&&item.audio.trim()!=='';
+  state.s2.audioMode=hasAudio;
+
+  if(hasAudio){
+    // AUDIO MODE
+    document.getElementById('s2-audio-area').style.display='block';
+    document.getElementById('s2-text-area').style.display='none';
+    const audioEl=document.getElementById('s2-audio-el');
+    audioEl.src=item.audio;
+    audioEl.load();
+    document.getElementById('s2-play-btn').disabled=false;
+    document.getElementById('s2-plays-left').textContent='2 plays remaining';
+    audioEl.onended=()=>s2AfterAudio();
+  } else {
+    // TEXT FLASH MODE (fallback)
+    document.getElementById('s2-audio-area').style.display='none';
+    document.getElementById('s2-text-area').style.display='block';
+    const sentEl=document.getElementById('s2-sentence');
+    sentEl.textContent=item.text;
+    sentEl.classList.remove('flash-hidden');
+    document.getElementById('s2-phase-label').textContent='Read carefully';
+    document.getElementById('s2-ring-num').textContent='5';
+    s2FlashRead();
+  }
+}
+
+function s2PlayAudio(){
+  const item=state.s2.sentences[state.s2.idx];
+  if(state.s2.playsLeft<=0)return;
+  const audioEl=document.getElementById('s2-audio-el');
+  audioEl.currentTime=0;audioEl.play();
+  state.s2.playsLeft--;
+  document.getElementById('s2-plays-left').textContent=state.s2.playsLeft+' play'+(state.s2.playsLeft!==1?'s':'')+' remaining';
+  document.getElementById('s2-play-btn').disabled=state.s2.playsLeft<=0;
+}
+function s2AfterAudio(){
+  document.getElementById('s2-input').disabled=false;
+  document.getElementById('s2-input').focus();
+  s2TypeCountdown();
+}
+function s2TypeCountdown(){
+    clearInterval(state.s2.timer);
+  let t=20;
+  const timer=document.getElementById('s2-timer');
+  timer.textContent=t;timer.classList.remove('danger');
+  state.s2.timer=setInterval(()=>{
+    t--;
+    timer.textContent=t<10?'0'+t:t;
+    if(t<=5)timer.classList.add('danger');
+    if(t<=10)document.getElementById('s2-next-btn').style.display='inline-block';
+    if(t<=0){clearInterval(state.s2.timer);s2Next(true);}
+  },1000);
+}
+
+function s2FlashRead(){
+  let t=5;
+  const numEl=document.getElementById('s2-ring-num');
+  const circ=document.getElementById('s2-ring-fg');
+  const CIRC=150.8;
+  circ.style.strokeDashoffset=0;
+  state.s2.timer=setInterval(()=>{
+    t--;numEl.textContent=t;
+    circ.style.strokeDashoffset=CIRC*(1-t/5);
+    if(t<=0){
+      clearInterval(state.s2.timer);
+      document.getElementById('s2-sentence').classList.add('flash-hidden');
+      document.getElementById('s2-phase-label').textContent='Now type the sentence';
+      document.getElementById('s2-input').disabled=false;
+      document.getElementById('s2-input').focus();
+      s2FlashType();
+    }
+  },1000);
+}
+function s2FlashType(){
+  let t=20;
+  const timer=document.getElementById('s2-timer');
+  const numEl=document.getElementById('s2-ring-num');
+  const circ=document.getElementById('s2-ring-fg');
+  const CIRC=150.8;
+  timer.textContent=t;timer.classList.remove('danger');
+  circ.style.strokeDashoffset=0;
+  state.s2.timer=setInterval(()=>{
+    t--;
+    timer.textContent=t<10?'0'+t:t;
+    numEl.textContent=t;
+    circ.style.strokeDashoffset=CIRC*(1-t/20);
+    if(t<=5)timer.classList.add('danger');
+    if(t<=15)document.getElementById('s2-next-btn').style.display='inline-block';
+    if(t<=0){clearInterval(state.s2.timer);s2Next(true);}
+  },1000);
+}
+function s2Next(auto=false){
+  clearInterval(state.s2.timer);
+  if (state.s2.idx >= 10) return;
+  state.s2.answers.push(document.getElementById('s2-input').value.trim());
+  state.s2.idx++;
+  if(state.s2.idx<10) s2Render();
+  else {
+    if(activeMode==='s2'){calculateScores();showResults();}
+    else{state.s3.passages=pick(ALL_PASSAGES,5);showScreen('screen-t2');}
+  }
+}
+
+// ============================================================
+// SECTION 3 — PASSAGE
+// ============================================================
+function startSection3(){showScreen('screen-s3');s3Render();}
+function s3Render(){
+  const{passages,idx}=state.s3;
+  document.getElementById('s3-qinfo').textContent=`Passage ${idx+1} of 5`;
+  document.getElementById('s3-progress').style.width=((idx+1)/5*100)+'%';
+  document.getElementById('s3-passage-text').textContent=passages[idx].text;
+  document.getElementById('s3-view-box').style.display='block';
+  const wa=document.getElementById('s3-write-area');
+  wa.style.display='none';
+  document.getElementById('s3-textarea').value='';
+  document.getElementById('s3-wc').textContent='0 / 100 words';
+  document.getElementById('s3-phase-label').textContent='Read this passage carefully';
+  document.getElementById('s3-timer').classList.remove('danger');
+  // Show Next button ONLY during write phase — hide during read phase
+  document.getElementById('s3-next-btn').style.display='none';
+  s3ReadPhase();
+}
+function s3ReadPhase(){
+  let t=30;
+  const timer=document.getElementById('s3-timer');
+  timer.textContent=t;
+  state.s3.timer=setInterval(()=>{
+    t--;timer.textContent=t;
+    if(t<=5)timer.classList.add('danger');
+    if(t<=0){clearInterval(state.s3.timer);s3WritePhase();}
+  },1000);
+}
+function s3WritePhase(){
+  document.getElementById('s3-passage-text').textContent='★ Passage hidden — reconstruct from memory';
+  document.getElementById('s3-phase-label').textContent='Now reconstruct the passage';
+  document.getElementById('s3-view-box').style.display='block';
+  document.getElementById('s3-write-area').style.display='block';
+  document.getElementById('s3-textarea').focus();
+  // Show Next button immediately when write phase starts
+  const btn=document.getElementById('s3-next-btn');
+  btn.textContent=state.s3.idx===4?'Finish Section ✓':'Next Passage →';
+  btn.style.display='inline-block';
+  let t=180;
+  const timer=document.getElementById('s3-timer');
+  timer.classList.remove('danger');
+  timer.textContent='3:00';
+  state.s3.timer=setInterval(()=>{
+    t--;
+    const m=Math.floor(t/60),s=t%60;
+    timer.textContent=m+':'+(s<10?'0':'')+s;
+    if(t<=30)timer.classList.add('danger');
+    if(t<=0){clearInterval(state.s3.timer);s3Next(true);}
+  },1000);
+}
+function s3WordCount(){
+  const ta=document.getElementById('s3-textarea');
+  const words=ta.value.trim().split(/\s+/).filter(w=>w.length>0);
+  if(words.length>100) ta.value=words.slice(0,100).join(' ');
+  document.getElementById('s3-wc').textContent=Math.min(words.length,100)+' / 100 words';
+}
+function s3Next(auto=false){
+  clearInterval(state.s3.timer);
+  state.s3.answers.push(document.getElementById('s3-textarea').value.trim());
+  state.s3.idx++;
+  if(state.s3.idx<5) s3Render();
+  else {
+    if(activeMode==='s3'){calculateScores();showResults();}
+    else{state.s4.topic=ALL_EMAIL_TOPICS[Math.floor(Math.random()*ALL_EMAIL_TOPICS.length)];showScreen('screen-t3');}
+  }
+}
+
+// ============================================================
+// SECTION 4 — EMAIL
+// ============================================================
+function startSection4(){showScreen('screen-s4');s4Start();}
+function s4Start(){
+  const topic=state.s4.topic;
+  document.getElementById('s4-topic').textContent=topic.topic;
+  const krow=document.getElementById('s4-keywords');
+  krow.innerHTML=topic.keywords.map(k=>`<span class="keyword-pill" id="kp-${k.replace(/\s/g,'_')}">${k}</span>`).join('');
+  document.getElementById('s4-email').value='';
+  s4Update();
+  let t=540;
+  const timer=document.getElementById('s4-timer');
+  const prog=document.getElementById('s4-progress');
+  state.s4.timer=setInterval(()=>{
+    t--;
+    const m=Math.floor(t/60),s=t%60;
+    timer.textContent=m+':'+(s<10?'0':'')+s;
+    prog.style.width=(t/540*100)+'%';
+    if(t<=60)timer.classList.add('danger');
+    if(t<=0){clearInterval(state.s4.timer);submitEmail(true);}
+  },1000);
+}
+function s4Update(){
+  const val=document.getElementById('s4-email').value;
+  const wc=val.trim().split(/\s+/).filter(w=>w.length>0).length;
+  document.getElementById('s4-wc-label').textContent=`Words: ${wc}`;
+  const warn=document.getElementById('s4-min-warn');
+  if(wc<180){warn.textContent=`${180-wc} more words needed`;warn.className='warn';}
+  else{warn.textContent='✓ Word count met';warn.style.color='var(--success)';warn.className='';}
+  const lower=val.toLowerCase();
+  state.s4.topic.keywords.forEach(k=>{
+    const el=document.getElementById('kp-'+k.replace(/\s/g,'_'));
+    if(el)el.className='keyword-pill'+(lower.includes(k.toLowerCase())?' used':'');
+  });
+  state.s4.answer=val;
+}
+function submitEmail(auto=false){
+  clearInterval(state.s4.timer);
+  state.s4.answer=document.getElementById('s4-email').value;
+  calculateScores();showResults();
+}
+
+// ============================================================
+// SCORING
+// ============================================================
+function norm(s){return String(s).toLowerCase().replace(/[^a-z0-9\s']/g,'').trim();}
+function similarity(a,b){
+  if(!a||!b)return 0;
+  const wa=a.split(/\s+/),wb=b.split(/\s+/);
+  const set=new Set(wb);
+  return wa.filter(w=>set.has(w)).length/Math.max(wa.length,wb.length);
+}
+
+function calculateScores(){
+  // S1
+  if(state.s1.questions.length>0){
+    let sc=0;
+    state.s1.questions.forEach((q,i)=>{
+      const ua=norm(state.s1.answers[i]||'');
+      if(q.a.some(a=>norm(a)===ua))sc++;
+    });
+    state.scores.s1=sc;
+  }
+  // S2
+  if(state.s2.sentences.length>0){
+    let sc=0;
+    state.s2.sentences.forEach((item,i)=>{
+      const ua=norm(state.s2.answers[i]||'');
+      const ca=norm(item.text);
+      const sim=similarity(ua,ca);
+      if(sim>=0.85)sc+=2;else if(sim>=0.6)sc+=1;
+    });
+    state.scores.s2=Math.min(sc,20);
+  }
+  // S3
+  if(state.s3.passages.length>0){
+    let total=0;
+    state.s3.passages.forEach((p,i)=>{
+      const ua=state.s3.answers[i]||'';
+      const words=ua.trim().split(/\s+/).filter(w=>w.length>0);
+      let s=5;
+      if(words.length<50)s-=2;
+      if(similarity(norm(ua),norm(p.text))<0.15)s-=2;
+      total+=Math.max(0,s);
+    });
+    state.scores.s3=Math.min(total,25);
+  }
+  // S4
+  if(state.s4.topic){
+    const email=state.s4.answer||'';
+    const wc=email.trim().split(/\s+/).filter(w=>w.length>0).length;
+    if(wc<180){state.scores.s4=0;}
+    else{
+      let sc=20;
+      const lower=email.toLowerCase();
+      const used=state.s4.topic.keywords.filter(k=>lower.includes(k.toLowerCase()));
+      sc-=(state.s4.topic.keywords.length-used.length)*5;
+      if(!/dear|hello|hi\s/i.test(email))sc-=2.5;
+      if(!/regards|sincerely|thanks|thank you/i.test(email))sc-=2.5;
+      if(wc>400)sc-=2;
+      state.scores.s4=Math.max(0,Math.round(sc*10)/10);
+    }
+  }
+}
+
+// ============================================================
+// RESULTS
+// ============================================================
+function showResults(){
+  document.getElementById('end-session-btn').style.display='none';
+  showScreen('screen-results');
+  const{s1,s2,s3,s4}=state.scores;
+  const total=(s1||0)+(s2||0)+(s3||0)+(s4||0);
+  const maxScore=(s1!==null?20:0)+(s2!==null?20:0)+(s3!==null?25:0)+(s4!==null?20:0);
+  document.getElementById('res-total').innerHTML=`${total} <span>/ ${maxScore}</span>`;
+  const grade=document.getElementById('res-grade');
+  const pct=maxScore>0?total/maxScore*100:0;
+  if(pct>=80){grade.textContent='Excellent ★';grade.style.cssText='background:rgba(26,107,60,.15);color:#1a6b3c;';}
+  else if(pct>=60){grade.textContent='Good';grade.style.cssText='background:rgba(201,168,76,.15);color:#8a6a10;';}
+  else if(pct>=40){grade.textContent='Needs Improvement';grade.style.cssText='background:rgba(192,57,43,.1);color:#c0392b;';}
+  else{grade.textContent='Keep Practicing';grade.style.cssText='background:rgba(192,57,43,.1);color:#c0392b;';}
+
+  const grid=document.getElementById('res-section-grid');
+  grid.innerHTML='';
+  if(s1!==null) grid.innerHTML+=`<div class="results-section-card"><div class="rsc-name">Fill in Blanks</div><div class="rsc-score">${s1} <em>/ 20</em></div></div>`;
+  if(s2!==null) grid.innerHTML+=`<div class="results-section-card"><div class="rsc-name">Dictation</div><div class="rsc-score">${s2} <em>/ 20</em></div></div>`;
+  if(s3!==null) grid.innerHTML+=`<div class="results-section-card"><div class="rsc-name">Passage</div><div class="rsc-score">${s3} <em>/ 25</em></div></div>`;
+  if(s4!==null) grid.innerHTML+=`<div class="results-section-card"><div class="rsc-name">Email</div><div class="rsc-score">${s4} <em>/ 20</em></div></div>`;
+
+  renderDetail();
+}
+
+function renderDetail(){
+  let html='';
+  const{s1,s2,s3,s4}=state.scores;
+
+  if(s1!==null){
+    html+=`<div class="detail-section"><div class="detail-section-title">Fill in the Blanks — ${s1}/20</div>`;
+    state.s1.questions.forEach((q,i)=>{
+      const ua=state.s1.answers[i]||'';
+      const correct=q.a.some(a=>norm(a)===norm(ua));
+      html+=`<div class="answer-row">
+        <div class="answer-q">
+          <div>${q.q.replace('_____','<strong style="color:var(--gold);">_____</strong>')}</div>
+          ${!correct?`<div class="answer-correct-text">✓ Correct: ${q.a.join(' / ')}</div>`:''}
+          ${!correct?`<div class="answer-user-text">✗ Your answer: ${esc(ua)||'(no answer)'}</div>`:''}
+        </div>
+        <span class="answer-badge ${correct?'badge-correct':'badge-wrong'}">${correct?'✓':'✗'}</span>
+      </div>`;
+    });
+    html+='</div>';
+  }
+
+  if(s2!==null){
+    html+=`<div class="detail-section"><div class="detail-section-title">Dictation — ${s2}/20</div>`;
+    state.s2.sentences.forEach((item,i)=>{
+      const ua=norm(state.s2.answers[i]||'');
+      const sim=similarity(ua,norm(item.text));
+      const pts=sim>=0.85?2:sim>=0.6?1:0;
+      html+=`<div class="answer-row">
+        <div class="answer-q">
+          <div style="font-size:11px;color:var(--text-muted);margin-bottom:3px;">Original:</div>
+          <div style="margin-bottom:5px;">${esc(item.text)}</div>
+          <div style="font-size:11px;color:var(--text-muted);">Your answer:</div>
+          <div style="font-size:13px;">${esc(state.s2.answers[i]||'(no answer)')}</div>
+        </div>
+        <span class="answer-badge ${pts===2?'badge-correct':pts===1?'badge-partial':'badge-wrong'}">${pts===2?'Full':pts===1?'Partial':'Wrong'}</span>
+      </div>`;
+    });
+    html+='</div>';
+  }
+
+  if(s3!==null){
+    html+=`<div class="detail-section"><div class="detail-section-title">Passage Reconstruction — ${s3}/25</div>`;
+    state.s3.passages.forEach((p,i)=>{
+      const ua=state.s3.answers[i]||'';
+      const wc=ua.trim().split(/\s+/).filter(w=>w.length>0).length;
+      html+=`<div class="passage-result-card">
+        <div class="prc-header"><div class="prc-title">Passage ${i+1}</div><div class="prc-score">${wc} words</div></div>
+        <div class="prc-label">Original</div><div class="prc-text" style="margin-bottom:8px;">${esc(p.text)}</div>
+        <div class="prc-label">Your Reconstruction</div><div class="prc-text" style="margin-bottom:8px;">${esc(ua)||'<em>(no answer)</em>'}</div>
+        <div class="prc-label">Sample Answer</div><div class="prc-text">${esc(p.answer)}</div>
+      </div>`;
+    });
+    html+='</div>';
+  }
+
+  if(s4!==null&&state.s4.topic){
+    const topic=state.s4.topic;
+    const email=state.s4.answer||'';
+    const wc=email.trim().split(/\s+/).filter(w=>w.length>0).length;
+    const lower=email.toLowerCase();
+    const used=topic.keywords.filter(k=>lower.includes(k.toLowerCase()));
+    const hasG=/dear|hello|hi\s/i.test(email);
+    const hasC=/regards|sincerely|thanks|thank you/i.test(email);
+    html+=`<div class="detail-section"><div class="detail-section-title">Email Writing — ${s4}/20</div>
+    <div class="email-result-card">
+      <div class="email-result-stat"><span>Word count</span><span class="val ${wc>=180?'val-good':'val-bad'}">${wc} ${wc<180?'(minimum not met)':'✓'}</span></div>
+      <div class="email-result-stat"><span>Keywords used</span><span class="val ${used.length===topic.keywords.length?'val-good':'val-bad'}">${used.length}/${topic.keywords.length}${used.length?' — '+used.join(', '):''}</span></div>
+      <div class="email-result-stat"><span>Greeting</span><span class="val ${hasG?'val-good':'val-bad'}">${hasG?'✓':'✗ Missing'}</span></div>
+      <div class="email-result-stat"><span>Closing</span><span class="val ${hasC?'val-good':'val-bad'}">${hasC?'✓':'✗ Missing'}</span></div>
+      <div style="margin-top:14px;padding-top:14px;border-top:1px solid var(--cream-dark);">
+        <div class="prc-label" style="margin-bottom:6px;">Your Email</div>
+        <div style="white-space:pre-wrap;font-size:13px;line-height:1.75;color:var(--text);background:var(--cream);border-radius:8px;padding:12px;">${esc(email)||'(no answer)'}</div>
+      </div>
+      <div style="margin-top:10px;">
+        <div class="prc-label" style="margin-bottom:6px;">Sample Answer</div>
+        <div style="white-space:pre-wrap;font-size:13px;line-height:1.75;color:var(--text);background:var(--cream);border-radius:8px;padding:12px;">${esc(topic.sample)}</div>
+      </div>
+    </div></div>`;
+  }
+
+  document.getElementById('results-detail').innerHTML=html;
+}
+
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+
+function restartTest(){
+  clearAllTimers();
+  document.getElementById('end-session-btn').style.display='none';
+  showScreen('screen-welcome');
+}
+
+// ============================================================
+// AMAN JHA FOOTER
+// ============================================================
+function togglePP(){
+  const p=document.getElementById('projects-panel');
+  const o=document.getElementById('pp-overlay');
+  const open=p.classList.contains('open');
+  if(open){p.classList.remove('open');o.classList.remove('open');}
+  else{p.classList.add('open');o.classList.add('open');}
+}
+function closePP(){
+  document.getElementById('projects-panel').classList.remove('open');
+  document.getElementById('pp-overlay').classList.remove('open');
+}
+</script>
+</body>
+</html>
