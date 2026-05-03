@@ -1,0 +1,1111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Professional Email Study Guide</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --cream: #FDF6EC;
+    --warm-bg: #FBF0E0;
+    --gold: #C8853A;
+    --gold-light: #E8A85A;
+    --gold-pale: #F5DDB8;
+    --brown: #5C3D1E;
+    --brown-light: #8B5E34;
+    --rust: #C04E2A;
+    --rust-light: #E07050;
+    --sage: #6B8F6B;
+    --sage-light: #A8C5A0;
+    --teal: #3A7A7A;
+    --teal-light: #6AACAC;
+    --plum: #7A3A5C;
+    --plum-light: #B06A8C;
+    --terracotta: #B85C38;
+    --terracotta-light: #D88060;
+    --olive: #7A7A3A;
+    --olive-light: #ACAC6A;
+    --text-dark: #2C1A0A;
+    --text-mid: #5C3D1E;
+    --text-muted: #9A7A5A;
+    --shadow-warm: 0 8px 32px rgba(90,50,10,0.13);
+    --shadow-hover: 0 16px 48px rgba(90,50,10,0.22);
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--warm-bg);
+    color: var(--text-dark);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ── BG TEXTURE ── */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      radial-gradient(ellipse at 20% 10%, rgba(200,133,58,0.12) 0%, transparent 50%),
+      radial-gradient(ellipse at 80% 90%, rgba(192,78,42,0.10) 0%, transparent 50%),
+      radial-gradient(ellipse at 60% 40%, rgba(107,143,107,0.08) 0%, transparent 40%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* ── BANNER ── */
+  .banner {
+    position: relative;
+    z-index: 1;
+    background: linear-gradient(135deg, var(--brown) 0%, #3A2010 50%, var(--brown) 100%);
+    color: var(--cream);
+    padding: 56px 24px 48px;
+    text-align: center;
+    overflow: hidden;
+  }
+
+  .banner::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image:
+      repeating-linear-gradient(45deg, rgba(255,255,255,0.03) 0px, rgba(255,255,255,0.03) 1px, transparent 1px, transparent 20px),
+      repeating-linear-gradient(-45deg, rgba(255,255,255,0.03) 0px, rgba(255,255,255,0.03) 1px, transparent 1px, transparent 20px);
+  }
+
+  .banner-inner { position: relative; z-index: 1; max-width: 860px; margin: 0 auto; }
+
+  .banner-tag {
+    display: inline-block;
+    font-size: 11px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--gold-light);
+    border: 1px solid rgba(200,133,58,0.5);
+    padding: 5px 16px;
+    border-radius: 50px;
+    margin-bottom: 20px;
+  }
+
+  .banner h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(28px, 5vw, 52px);
+    font-weight: 700;
+    line-height: 1.15;
+    color: #FFF8EE;
+    margin-bottom: 14px;
+  }
+
+  .banner h1 span { color: var(--gold-light); }
+
+  .banner p {
+    font-size: 15px;
+    color: rgba(255,248,238,0.7);
+    max-width: 520px;
+    margin: 0 auto 36px;
+    line-height: 1.7;
+  }
+
+  /* ── EMAIL FORMAT TEMPLATE ── */
+  .format-card {
+    background: rgba(255,248,238,0.07);
+    border: 1px solid rgba(200,133,58,0.3);
+    border-radius: 16px;
+    padding: 24px 28px;
+    text-align: left;
+    max-width: 640px;
+    margin: 0 auto;
+    backdrop-filter: blur(4px);
+  }
+
+  .format-card h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 15px;
+    color: var(--gold-light);
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .format-card h3::before {
+    content: '';
+    display: inline-block;
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--gold-light);
+  }
+
+  .format-steps { display: flex; flex-direction: column; gap: 8px; }
+
+  .format-step {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    font-size: 13px;
+  }
+
+  .step-num {
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    background: rgba(200,133,58,0.3);
+    color: var(--gold-light);
+    font-size: 11px;
+    font-weight: 600;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  .step-label { color: var(--gold-light); font-weight: 500; margin-right: 4px; }
+  .step-desc { color: rgba(255,248,238,0.65); line-height: 1.5; }
+
+  .highlight-note {
+    margin-top: 14px;
+    padding: 8px 14px;
+    background: rgba(200,133,58,0.15);
+    border-radius: 8px;
+    font-size: 12px;
+    color: var(--gold-light);
+    display: flex; align-items: center; gap: 8px;
+  }
+
+  /* ── MAIN SECTION ── */
+  .main {
+    position: relative;
+    z-index: 1;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 56px 24px 80px;
+  }
+
+  .section-label {
+    text-align: center;
+    margin-bottom: 40px;
+  }
+
+  .section-label h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(22px, 3.5vw, 34px);
+    color: var(--brown);
+    margin-bottom: 8px;
+  }
+
+  .section-label p {
+    font-size: 14px;
+    color: var(--text-muted);
+  }
+
+  /* ── GRID ── */
+  .email-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+  }
+
+  @media (max-width: 768px) {
+    .email-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (max-width: 480px) {
+    .email-grid { grid-template-columns: 1fr; }
+  }
+
+  /* ── EMAIL CARDS ── */
+  .email-card {
+    position: relative;
+    border-radius: 18px;
+    padding: 28px 22px 24px;
+    cursor: pointer;
+    transition: transform 0.3s cubic-bezier(.34,1.56,.64,1), box-shadow 0.3s ease;
+    overflow: hidden;
+    border: 1px solid rgba(255,255,255,0.6);
+  }
+
+  .email-card::before {
+    content: '';
+    position: absolute;
+    top: -30%;
+    right: -20%;
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    opacity: 0.12;
+    transition: transform 0.4s ease;
+  }
+
+  .email-card:hover {
+    transform: translateY(-6px) scale(1.02);
+    box-shadow: var(--shadow-hover);
+  }
+
+  .email-card:hover::before { transform: scale(1.3); }
+
+  /* Color themes */
+  .theme-amber {
+    background: linear-gradient(145deg, #FFF3E0, #FFE0B0);
+    box-shadow: 0 6px 24px rgba(200,133,58,0.18);
+  }
+  .theme-amber::before { background: var(--gold); }
+  .theme-amber .card-num { color: var(--gold); border-color: rgba(200,133,58,0.3); }
+  .theme-amber .card-title { color: var(--brown); }
+  .theme-amber .card-to { color: var(--brown-light); }
+  .theme-amber .card-keywords span { background: rgba(200,133,58,0.15); color: var(--gold); }
+  .theme-amber .card-icon { color: var(--gold); }
+  .theme-amber .card-badge { background: var(--gold); color: #FFF; }
+
+  .theme-rust {
+    background: linear-gradient(145deg, #FFF0EB, #FFD8CC);
+    box-shadow: 0 6px 24px rgba(192,78,42,0.15);
+  }
+  .theme-rust::before { background: var(--rust); }
+  .theme-rust .card-num { color: var(--rust); border-color: rgba(192,78,42,0.3); }
+  .theme-rust .card-title { color: #5C1E0A; }
+  .theme-rust .card-to { color: #8B3E2A; }
+  .theme-rust .card-keywords span { background: rgba(192,78,42,0.12); color: var(--rust); }
+  .theme-rust .card-icon { color: var(--rust); }
+  .theme-rust .card-badge { background: var(--rust); color: #FFF; }
+
+  .theme-sage {
+    background: linear-gradient(145deg, #EFF7EF, #D4EBCC);
+    box-shadow: 0 6px 24px rgba(107,143,107,0.15);
+  }
+  .theme-sage::before { background: var(--sage); }
+  .theme-sage .card-num { color: var(--sage); border-color: rgba(107,143,107,0.3); }
+  .theme-sage .card-title { color: #2A4A2A; }
+  .theme-sage .card-to { color: #4A6E4A; }
+  .theme-sage .card-keywords span { background: rgba(107,143,107,0.13); color: var(--sage); }
+  .theme-sage .card-icon { color: var(--sage); }
+  .theme-sage .card-badge { background: var(--sage); color: #FFF; }
+
+  .theme-teal {
+    background: linear-gradient(145deg, #E8F5F5, #C4E8E8);
+    box-shadow: 0 6px 24px rgba(58,122,122,0.15);
+  }
+  .theme-teal::before { background: var(--teal); }
+  .theme-teal .card-num { color: var(--teal); border-color: rgba(58,122,122,0.3); }
+  .theme-teal .card-title { color: #0A3A3A; }
+  .theme-teal .card-to { color: #2A5E5E; }
+  .theme-teal .card-keywords span { background: rgba(58,122,122,0.12); color: var(--teal); }
+  .theme-teal .card-icon { color: var(--teal); }
+  .theme-teal .card-badge { background: var(--teal); color: #FFF; }
+
+  .theme-plum {
+    background: linear-gradient(145deg, #F7EDEF, #EAC8D4);
+    box-shadow: 0 6px 24px rgba(122,58,92,0.15);
+  }
+  .theme-plum::before { background: var(--plum); }
+  .theme-plum .card-num { color: var(--plum); border-color: rgba(122,58,92,0.3); }
+  .theme-plum .card-title { color: #3A0A2A; }
+  .theme-plum .card-to { color: #6A2A4A; }
+  .theme-plum .card-keywords span { background: rgba(122,58,92,0.12); color: var(--plum); }
+  .theme-plum .card-icon { color: var(--plum); }
+  .theme-plum .card-badge { background: var(--plum); color: #FFF; }
+
+  .theme-terracotta {
+    background: linear-gradient(145deg, #FDF0EB, #F5D0BC);
+    box-shadow: 0 6px 24px rgba(184,92,56,0.15);
+  }
+  .theme-terracotta::before { background: var(--terracotta); }
+  .theme-terracotta .card-num { color: var(--terracotta); border-color: rgba(184,92,56,0.3); }
+  .theme-terracotta .card-title { color: #4A1A0A; }
+  .theme-terracotta .card-to { color: #7A3A1A; }
+  .theme-terracotta .card-keywords span { background: rgba(184,92,56,0.12); color: var(--terracotta); }
+  .theme-terracotta .card-icon { color: var(--terracotta); }
+  .theme-terracotta .card-badge { background: var(--terracotta); color: #FFF; }
+
+  .theme-olive {
+    background: linear-gradient(145deg, #F5F5E0, #E4E4B8);
+    box-shadow: 0 6px 24px rgba(122,122,58,0.15);
+  }
+  .theme-olive::before { background: var(--olive); }
+  .theme-olive .card-num { color: var(--olive); border-color: rgba(122,122,58,0.3); }
+  .theme-olive .card-title { color: #2A2A0A; }
+  .theme-olive .card-to { color: #505020; }
+  .theme-olive .card-keywords span { background: rgba(122,122,58,0.12); color: var(--olive); }
+  .theme-olive .card-icon { color: var(--olive); }
+  .theme-olive .card-badge { background: var(--olive); color: #FFF; }
+
+  /* card internals */
+  .card-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+
+  .card-num {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    border: 1px solid;
+    padding: 3px 10px;
+    border-radius: 50px;
+  }
+
+  .card-icon {
+    font-size: 22px;
+    opacity: 0.85;
+  }
+
+  .card-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 1.35;
+    margin-bottom: 6px;
+  }
+
+  .card-to {
+    font-size: 12px;
+    font-weight: 500;
+    margin-bottom: 14px;
+    opacity: 0.85;
+  }
+
+  .card-keywords {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    margin-bottom: 18px;
+  }
+
+  .card-keywords span {
+    font-size: 11px;
+    font-weight: 500;
+    padding: 3px 9px;
+    border-radius: 50px;
+  }
+
+  .card-cta {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    opacity: 0.7;
+    transition: opacity 0.2s;
+  }
+
+  .card-badge {
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 2px 8px;
+    border-radius: 50px;
+  }
+
+  .email-card:hover .card-cta { opacity: 1; }
+
+  .star-badge {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    background: linear-gradient(135deg, #FFD700, #FFA500);
+    color: #5C3000;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    padding: 3px 8px;
+    border-radius: 50px;
+    box-shadow: 0 2px 8px rgba(255,165,0,0.4);
+  }
+
+  /* ── OVERLAY ── */
+  .overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(30,15,5,0.72);
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+    backdrop-filter: blur(6px);
+  }
+
+  .overlay.active { display: flex; }
+
+  /* ── ENVELOPE ── */
+  .envelope-wrap {
+    position: relative;
+    width: 100%;
+    max-width: 680px;
+    perspective: 1000px;
+  }
+
+  .envelope {
+    position: relative;
+    border-radius: 4px;
+    transform-origin: bottom center;
+    animation: envelopeReveal 0.7s cubic-bezier(.22,1,.36,1) forwards;
+  }
+
+  @keyframes envelopeReveal {
+    0% { transform: rotateX(25deg) translateY(60px); opacity: 0; }
+    100% { transform: rotateX(0deg) translateY(0); opacity: 1; }
+  }
+
+  .env-back {
+    background: linear-gradient(160deg, #8B5E34, #5C3D1E);
+    border-radius: 12px;
+    padding: 4px;
+    box-shadow: 0 32px 80px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.08);
+  }
+
+  .env-flap {
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 52px;
+    background: linear-gradient(170deg, #A07040 0%, #7A4E28 100%);
+    clip-path: polygon(0 0, 100% 0, 50% 100%);
+    border-radius: 10px 10px 0 0;
+    z-index: 2;
+    transform-origin: top center;
+    animation: flapOpen 0.5s ease 0.15s forwards;
+    transform: rotateX(0deg);
+  }
+
+  @keyframes flapOpen {
+    0% { transform: rotateX(0deg); }
+    100% { transform: rotateX(-160deg); }
+  }
+
+  .email-popup {
+    background: var(--cream);
+    border-radius: 10px;
+    max-height: 76vh;
+    overflow-y: auto;
+    animation: letterSlide 0.5s ease 0.35s both;
+    position: relative;
+    z-index: 1;
+  }
+
+  @keyframes letterSlide {
+    0% { transform: translateY(30px); opacity: 0; }
+    100% { transform: translateY(0); opacity: 1; }
+  }
+
+  .email-popup::-webkit-scrollbar { width: 6px; }
+  .email-popup::-webkit-scrollbar-track { background: rgba(0,0,0,0.05); border-radius: 3px; }
+  .email-popup::-webkit-scrollbar-thumb { background: var(--gold-pale); border-radius: 3px; }
+
+  .popup-header {
+    padding: 24px 28px 18px;
+    border-bottom: 1px solid var(--gold-pale);
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+    position: sticky;
+    top: 0;
+    background: var(--cream);
+    z-index: 10;
+    border-radius: 10px 10px 0 0;
+  }
+
+  .popup-title-group { flex: 1; }
+
+  .popup-num {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 4px;
+  }
+
+  .popup-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 18px;
+    color: var(--brown);
+    line-height: 1.3;
+  }
+
+  .popup-to {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-top: 3px;
+  }
+
+  .close-btn {
+    background: none;
+    border: 1px solid var(--gold-pale);
+    border-radius: 50%;
+    width: 32px; height: 32px;
+    cursor: pointer;
+    color: var(--text-muted);
+    font-size: 16px;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.2s;
+    flex-shrink: 0;
+  }
+
+  .close-btn:hover { background: var(--gold-pale); color: var(--brown); }
+
+  .popup-body {
+    padding: 24px 28px 28px;
+    font-size: 14.5px;
+    line-height: 1.95;
+    color: var(--text-dark);
+    white-space: pre-wrap;
+    font-family: 'DM Sans', sans-serif;
+  }
+
+  .popup-body .kw {
+    background: rgba(200,133,58,0.15);
+    color: var(--brown);
+    padding: 1px 6px;
+    border-radius: 4px;
+    font-weight: 500;
+  }
+
+  .popup-footer {
+    padding: 14px 28px 20px;
+    border-top: 1px solid var(--gold-pale);
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+  }
+
+  .copy-btn-popup {
+    background: var(--gold);
+    color: #FFF;
+    border: none;
+    border-radius: 50px;
+    padding: 9px 22px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    transition: background 0.2s, transform 0.15s;
+  }
+
+  .copy-btn-popup:hover { background: var(--brown); transform: scale(1.03); }
+
+  .close-btn-footer {
+    background: none;
+    color: var(--text-muted);
+    border: 1px solid var(--gold-pale);
+    border-radius: 50px;
+    padding: 9px 22px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    transition: background 0.2s;
+  }
+
+  .close-btn-footer:hover { background: var(--gold-pale); }
+
+  /* ── FOOTER ── */
+  .footer {
+    position: relative;
+    z-index: 1;
+    text-align: center;
+    padding: 28px 24px 40px;
+    font-size: 13px;
+    color: var(--text-muted);
+    border-top: 1px solid rgba(200,133,58,0.2);
+  }
+
+  .footer strong { color: var(--gold); }
+
+  /* Scrollbar for Firefox */
+  .email-popup { scrollbar-width: thin; scrollbar-color: var(--gold-pale) transparent; }
+</style>
+</head>
+<body>
+
+<!-- ── BANNER ── -->
+<div class="banner">
+  <div class="banner-inner">
+    <div class="banner-tag">✦ Concentrix Preparation</div>
+    <h1>Professional <span>Email</span><br>Study Guide</h1>
+    <p>All 9 emails in one place. Click any card to read the full email with an envelope opening animation.</p>
+
+    <div class="format-card">
+      <h3>Fixed Email Template — Same for Every Email</h3>
+      <div class="format-steps">
+        <div class="format-step">
+          <div class="step-num">1</div>
+          <div><span class="step-label">Greeting —</span><span class="step-desc">"Dear [Name],"</span></div>
+        </div>
+        <div class="format-step">
+          <div class="step-num">2</div>
+          <div><span class="step-label">Hope sentence —</span><span class="step-desc">"I hope this email finds you well."</span></div>
+        </div>
+        <div class="format-step">
+          <div class="step-num">3</div>
+          <div><span class="step-label">Purpose —</span><span class="step-desc">"I am writing to [purpose]."</span></div>
+        </div>
+        <div class="format-step">
+          <div class="step-num">4</div>
+          <div><span class="step-label">Point 1, 2, 3 —</span><span class="step-desc">First / Second / Third + explanation</span></div>
+        </div>
+        <div class="format-step">
+          <div class="step-num">5</div>
+          <div><span class="step-label">Closing —</span><span class="step-desc">"I hope you will consider my suggestions."</span></div>
+        </div>
+        <div class="format-step">
+          <div class="step-num">6</div>
+          <div><span class="step-label">Sign off —</span><span class="step-desc">"Thank you very much. Warm regards, [Your Name]"</span></div>
+        </div>
+      </div>
+      <div class="highlight-note">
+        ★ Only the 3 keywords change per email — everything else is the same!
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── MAIN ── -->
+<div class="main">
+  <div class="section-label">
+    <h2>Click an Email to Read It</h2>
+    <p>Email 1 and Email 3 are highlighted — most likely to appear in your Concentrix test.</p>
+  </div>
+
+  <div class="email-grid">
+
+    <!-- Email 1 - amber (TOP PICK) -->
+    <div class="email-card theme-amber" onclick="openEmail(1)">
+      <div class="star-badge">★ Top Pick</div>
+      <div class="card-header">
+        <span class="card-num">Email 1</span>
+        <span class="card-icon">🏆</span>
+      </div>
+      <div class="card-title">Nominating Anna for Employee Reward</div>
+      <div class="card-to">→ Mr. Henderson (Manager)</div>
+      <div class="card-keywords">
+        <span>Work Habits</span>
+        <span>New Ideas</span>
+        <span>Customer Satisfaction</span>
+      </div>
+      <div class="card-cta"><span class="card-badge">Open</span> Click to read ›</div>
+    </div>
+
+    <!-- Email 2 - rust -->
+    <div class="email-card theme-rust" onclick="openEmail(2)">
+      <div class="card-header">
+        <span class="card-num">Email 2</span>
+        <span class="card-icon">🧺</span>
+      </div>
+      <div class="card-title">Approval for Company Picnic</div>
+      <div class="card-to">→ Mr. Wilson (Supervisor)</div>
+      <div class="card-keywords">
+        <span>New Employees</span>
+        <span>Extra Money</span>
+        <span>Team Building</span>
+      </div>
+      <div class="card-cta"><span class="card-badge">Open</span> Click to read ›</div>
+    </div>
+
+    <!-- Email 3 - amber (TOP PICK, same as Email 1) -->
+    <div class="email-card theme-amber" onclick="openEmail(3)">
+      <div class="star-badge">★ Top Pick</div>
+      <div class="card-header">
+        <span class="card-num">Email 3</span>
+        <span class="card-icon">⏰</span>
+      </div>
+      <div class="card-title">Time Management Advice for Thomas</div>
+      <div class="card-to">→ Thomas (Co-worker)</div>
+      <div class="card-keywords">
+        <span>To-Do List</span>
+        <span>By Importance</span>
+        <span>Daily Review</span>
+      </div>
+      <div class="card-cta"><span class="card-badge">Open</span> Click to read ›</div>
+    </div>
+
+    <!-- Email 4 - sage -->
+    <div class="email-card theme-sage" onclick="openEmail(4)">
+      <div class="card-header">
+        <span class="card-num">Email 4</span>
+        <span class="card-icon">🌿</span>
+      </div>
+      <div class="card-title">Suggestions for Extra Office Space</div>
+      <div class="card-to">→ Ms. Wilson (HR)</div>
+      <div class="card-keywords">
+        <span>Café</span>
+        <span>On-site Gym</span>
+        <span>Flower Garden</span>
+      </div>
+      <div class="card-cta"><span class="card-badge">Open</span> Click to read ›</div>
+    </div>
+
+    <!-- Email 5 - teal -->
+    <div class="email-card theme-teal" onclick="openEmail(5)">
+      <div class="card-header">
+        <span class="card-num">Email 5</span>
+        <span class="card-icon">🔒</span>
+      </div>
+      <div class="card-title">Improving Office Security</div>
+      <div class="card-to">→ Mr. Smith (HR)</div>
+      <div class="card-keywords">
+        <span>ID Cards</span>
+        <span>Security Guard</span>
+        <span>CCTV / Video</span>
+      </div>
+      <div class="card-cta"><span class="card-badge">Open</span> Click to read ›</div>
+    </div>
+
+    <!-- Email 6 - plum -->
+    <div class="email-card theme-plum" onclick="openEmail(6)">
+      <div class="card-header">
+        <span class="card-num">Email 6</span>
+        <span class="card-icon">🪑</span>
+      </div>
+      <div class="card-title">Completing Bulk Furniture Order</div>
+      <div class="card-to">→ David (Manager)</div>
+      <div class="card-keywords">
+        <span>Working Hours</span>
+        <span>New Equipment</span>
+        <span>Hire New People</span>
+      </div>
+      <div class="card-cta"><span class="card-badge">Open</span> Click to read ›</div>
+    </div>
+
+    <!-- Email 7 - terracotta -->
+    <div class="email-card theme-terracotta" onclick="openEmail(7)">
+      <div class="card-header">
+        <span class="card-num">Email 7</span>
+        <span class="card-icon">💻</span>
+      </div>
+      <div class="card-title">Provide Laptops to All Employees</div>
+      <div class="card-to">→ Mr. Campbell (Team Leader)</div>
+      <div class="card-keywords">
+        <span>Meet Customers</span>
+        <span>Work from Home</span>
+        <span>Travel Connected</span>
+      </div>
+      <div class="card-cta"><span class="card-badge">Open</span> Click to read ›</div>
+    </div>
+
+    <!-- Email 8 - olive -->
+    <div class="email-card theme-olive" onclick="openEmail(8)">
+      <div class="card-header">
+        <span class="card-num">Email 8</span>
+        <span class="card-icon">✈️</span>
+      </div>
+      <div class="card-title">Justifying Overseas Computer Purchase</div>
+      <div class="card-to">→ Mr. Wayne (Supervisor)</div>
+      <div class="card-keywords">
+        <span>Better Quality</span>
+        <span>Warranty & Support</span>
+        <span>Better Features</span>
+      </div>
+      <div class="card-cta"><span class="card-badge">Open</span> Click to read ›</div>
+    </div>
+
+    <!-- Email 9 hidden, Email 10 shown as Email 9 in display -->
+    <!-- Email 10 as the last visible card - sage variant -->
+    <div class="email-card theme-sage" onclick="openEmail(10)">
+      <div class="card-header">
+        <span class="card-num">Email 10</span>
+        <span class="card-icon">🛡️</span>
+      </div>
+      <div class="card-title">Office Security Improvements</div>
+      <div class="card-to">→ Mr. Smith (HR) — Version 2</div>
+      <div class="card-keywords">
+        <span>ID Cards</span>
+        <span>Security Guard</span>
+        <span>Video Monitoring</span>
+      </div>
+      <div class="card-cta"><span class="card-badge">Open</span> Click to read ›</div>
+    </div>
+
+  </div>
+</div>
+
+<div class="footer">
+  <strong>★ Remember:</strong> Same template for all emails. Just memorize the 3 keywords per topic. Good luck, Aman!
+</div>
+
+<!-- ── OVERLAY ── -->
+<div class="overlay" id="overlay" onclick="handleOverlayClick(event)">
+  <div class="envelope-wrap">
+    <div class="envelope" id="envelope">
+      <div class="env-back">
+        <div class="env-flap" id="envFlap"></div>
+        <div class="email-popup" id="emailPopup">
+          <div class="popup-header">
+            <div class="popup-title-group">
+              <div class="popup-num" id="popupNum">Email 1</div>
+              <div class="popup-title" id="popupTitle">Title</div>
+              <div class="popup-to" id="popupTo">→ Recipient</div>
+            </div>
+            <button class="close-btn" onclick="closeEmail()">✕</button>
+          </div>
+          <div class="popup-body" id="popupBody"></div>
+          <div class="popup-footer">
+            <button class="close-btn-footer" onclick="closeEmail()">Close</button>
+            <button class="copy-btn-popup" onclick="copyEmail()">Copy Email</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const emails = {
+  1: {
+    num: "Email 1",
+    title: "Nominating Anna for Employee Reward",
+    to: "→ Mr. Henderson (Manager)",
+    body: `Dear Mr. Henderson,
+
+I hope this email finds you well. I am writing to recommend my colleague, [Anna], for the employee reward program. I have worked with her closely and I believe she truly deserves this recognition.
+
+First, I would like to talk about her [work habits]. Anna always comes to work on time and completes all her tasks before the deadline. She is very organized and never misses any important work. She gives her full effort every single day, which inspires the whole team.
+
+Second, Anna is very good at sharing [new ideas]. During our recent project, she suggested several creative solutions that saved us a lot of time and helped us work more efficiently. Her ideas are always practical and easy to follow. She always thinks of better ways to do things, which benefits the entire team.
+
+Third, Anna is excellent when it comes to [customer satisfaction]. She always listens carefully to what the clients need and makes sure all work is done according to their expectations. Her polite and professional attitude has helped us build a very good relationship with many of our important customers.
+
+I strongly believe that Anna is a great employee and deserves to be rewarded for her hard work and dedication. Recognizing her will also motivate other team members to perform better.
+
+I hope you will consider my recommendation. Thank you very much for your time.
+
+Warm regards,
+[Your Name]`
+  },
+  2: {
+    num: "Email 2",
+    title: "Approval for Company Picnic",
+    to: "→ Mr. Wilson (Supervisor)",
+    body: `Dear Mr. Wilson,
+
+I hope this email finds you well. I am writing to request your approval to organize a [company picnic] for all employees. My colleagues and I believe that this event will be very good for the whole team.
+
+First, it will be very helpful for our [new employees]. Many people who joined recently do not know their colleagues well. A picnic will give them a great chance to talk to others, make friends, and feel comfortable in the company. When new employees feel welcome, they work better and settle in more quickly.
+
+Second, a picnic is a good way to earn [extra money] for the company in the long run. Happy employees work harder and take fewer unnecessary leaves. They also stay longer in the company, which means we spend less money on hiring and training new people. So the small cost of the picnic will save the company a lot of money over time.
+
+Third, the picnic will help in [team building]. When people enjoy activities together outside the office, they build stronger friendships and trust. This helps them communicate and cooperate better at work. A united team always produces better results.
+
+I hope you will consider my suggestion and give us your approval to plan this event. I am sure it will be a very positive experience for everyone.
+
+Thank you very much for your time.
+
+Best regards,
+[Your Name]`
+  },
+  3: {
+    num: "Email 3",
+    title: "Time Management Advice for Thomas",
+    to: "→ Thomas (Co-worker)",
+    body: `Dear Thomas,
+
+I hope this email finds you well. I am writing in reply to your email asking for advice on how to [manage your time better]. I am happy to share three simple tips that I think will help you a lot.
+
+First, I suggest you start using a [to-do list]. Every morning, write down all the tasks you need to complete that day. This will help you remember everything and stop you from forgetting important work. When you can see all your tasks clearly, it becomes much easier to focus and work in a planned way. You will also feel good when you cross off completed tasks one by one.
+
+Second, always arrange your tasks [by importance]. After making your list, decide which tasks are the most important and do those first. Do not spend time on small or less important tasks when a big and urgent task is waiting. When you complete the most important work first, you feel less stressed and more in control of your day.
+
+Third, do a [daily progress review] at the end of each day. Spend five to ten minutes thinking about what you completed and what is still pending. This will help you plan the next day better and understand where you are losing time. Over time, this habit will help you become much more efficient.
+
+I hope you will consider my suggestions. These three habits are simple but very powerful if you follow them every day.
+
+Thank you very much for reaching out. Good luck, Thomas!
+
+Best regards,
+[Your Name]`
+  },
+  4: {
+    num: "Email 4",
+    title: "Suggestions for Extra Office Space",
+    to: "→ Ms. Wilson (HR Representative)",
+    body: `Dear Ms. Wilson,
+
+I hope this email finds you well. I am writing to share my suggestions on how to best use the [extra space] available on our company's property. I have three ideas that I believe will benefit all employees.
+
+First, I suggest setting up a [café] on the premises. Right now, employees have to go outside the office to get food or drinks, which wastes a lot of time. A small café inside the office will save time and give everyone a comfortable place to relax during breaks. It will also make the workplace feel more friendly and enjoyable.
+
+Second, I recommend building an [on-site gym]. Regular exercise helps people feel healthier and more energetic. If employees have a gym available in the office, they will be able to exercise before or after work without spending extra time travelling. Healthy employees tend to feel less stressed and work more productively. It will also show that the company truly cares about employee well-being.
+
+Third, I propose creating a [flower garden] in the open space. A garden with beautiful flowers and green plants will make the office environment look more pleasant and calming. Employees can take short walks there during breaks, which will help reduce stress and improve their mood. It will also improve the overall appearance of the company premises.
+
+I hope you will consider my suggestions. I am confident that these changes will make our workplace a much better place for everyone.
+
+Thank you very much for giving us this opportunity to share our ideas.
+
+Warm regards,
+[Your Name]`
+  },
+  5: {
+    num: "Email 5",
+    title: "Improving Office Security",
+    to: "→ Mr. Smith (HR)",
+    body: `Dear Mr. Smith,
+
+I hope this email finds you well. I am writing to share my concerns about the [security of our office] and to suggest some ways in which we can make it safer for everyone. I believe the following three steps will help a great deal.
+
+First, I suggest introducing [identification cards] for all employees and visitors. Every person entering the office should carry a valid ID card issued by the company. This will make it easy to identify who is authorized to be inside and who is not. It will also help prevent unknown or unauthorized people from entering the premises, which will make the office much safer.
+
+Second, I recommend hiring trained [security guards] to monitor the main entrance and other important areas of the office. A security guard can check IDs, manage visitors, and respond quickly if something suspicious happens. Their presence alone will discourage anyone from attempting to enter without permission. No technology can fully replace the value of a trained human being at the gate.
+
+Third, I strongly suggest installing a [video monitoring] system, also known as CCTV cameras, throughout the office. Cameras should be placed at all entrances, corridors, parking areas, and other key locations. This will allow round-the-clock surveillance and will also provide useful video evidence if any incident takes place.
+
+I hope you will consider my suggestions. Improving office security is very important for the safety and comfort of all employees.
+
+Thank you very much for your time and attention.
+
+Regards,
+[Your Name]`
+  },
+  6: {
+    num: "Email 6",
+    title: "Completing Bulk Furniture Order on Time",
+    to: "→ David (Manager)",
+    body: `Dear David,
+
+I hope this email finds you well. I am writing to suggest some ways in which we can complete the [bulk furniture order] on time. I understand we are under pressure, and I believe the following three steps will help us meet our target.
+
+First, I suggest increasing [working hours] temporarily. If our team works extra shifts or overtime during this period, we can produce more furniture each day and quickly reduce the backlog. Employees can be offered overtime pay as a reward for their extra effort. Dividing the team into morning and evening shifts will also ensure that work continues for a longer time each day without putting too much pressure on any one person.
+
+Second, I recommend investing in [new equipment]. If some of our current machines are slow or outdated, upgrading them will help us work faster and with fewer mistakes. New and modern equipment produces results more quickly and also breaks down less often. This will directly increase the speed of production and help us finish the order on time.
+
+Third, I suggest [hiring new people] on a temporary basis to support our existing team. More workers on the floor means more furniture gets made each day. Temporary staff can be hired quickly and trained for simple tasks so that our full-time employees can focus on the more skilled parts of the work.
+
+I hope you will consider my suggestions. I believe these three steps together will help us complete the order successfully and on time.
+
+Thank you very much for your time.
+
+Best regards,
+[Your Name]`
+  },
+  7: {
+    num: "Email 7",
+    title: "Provide Laptops to All Employees",
+    to: "→ Mr. Campbell (Team Leader)",
+    body: `Dear Mr. Campbell,
+
+I hope this email finds you well. I am writing to suggest that the company should provide a [personal laptop] to every employee. Right now, we share computers, which often creates problems. I believe there are three strong reasons why each employee should have their own laptop.
+
+First, having a personal laptop will help employees when [meeting new customers]. When an employee goes to meet a client, they need to carry files, presentations, and important information. With a personal laptop, everything will always be ready and easily accessible. This will make employees look more professional and prepared in front of customers, which will create a good impression of the company.
+
+Second, a personal laptop will make it easier to [work from home]. There are times when an employee cannot come to the office due to illness, bad weather, or personal reasons. If they have their own laptop, they can continue working from home without any loss of productivity. This flexibility is very important in today's modern work environment.
+
+Third, employees can [stay connected during travel]. Many employees travel for meetings, conferences, or client visits. With a personal laptop, they can check emails, join online meetings, and complete tasks even while they are away from the office. This ensures that work never stops, no matter where the employee is.
+
+I hope you will consider my suggestions. Providing laptops to all employees is a smart investment that will improve the overall efficiency and performance of the team.
+
+Thank you very much for your time.
+
+Best regards,
+[Your Name]`
+  },
+  8: {
+    num: "Email 8",
+    title: "Justifying Overseas Computer Purchase",
+    to: "→ Mr. Wayne (Supervisor)",
+    body: `Dear Mr. Wayne,
+
+I hope this email finds you well. I am writing to explain why I chose to purchase computers from the [overseas company] instead of the local company, even though the local option was cheaper. I understand your concern, and I would like to share the reasons behind my decision.
+
+First, the quality of the overseas computers was much [better]. After carefully comparing both options, I found that the overseas company's computers were faster, more powerful, and more durable than the local ones. Since our employees use these computers every day for important work, it was very important to choose reliable machines that will last longer and perform better. Poor quality computers can break down often, which wastes both time and money.
+
+Second, the overseas company offered a much better [warranty and support]. They provided a long warranty period and a dedicated customer support team to help in case of any technical problems. The local company could not offer the same level of after-sales service. Having good support means that if any computer stops working, we can get it fixed quickly without losing much time.
+
+Third, the overseas computers came with [better features] that are needed for our work. They had the latest processors, more storage, and better security features, which are all very important for our daily tasks. Choosing cheaper computers with outdated features would have caused problems in the future and may have required an early replacement.
+
+I hope you will consider my explanation. I made this decision keeping the long-term benefit of the company in mind.
+
+Thank you very much for your understanding.
+
+Best regards,
+[Your Name]`
+  },
+  10: {
+    num: "Email 10",
+    title: "Office Security Improvements — Version 2",
+    to: "→ Mr. Smith (HR)",
+    body: `Dear Mr. Smith,
+
+I hope this email finds you well. I am writing to share my suggestions on how to improve the [security of our office]. I feel that our current security system is not strong enough, and some important changes need to be made as soon as possible.
+
+First, I believe we should introduce [identification cards] for all employees and visitors. Every person who enters the office must carry an ID card provided by the company. This will make it very easy to know who is allowed inside and who is not. Without a proper ID card system, it is very difficult to control who enters the office, which is a serious security risk.
+
+Second, I suggest hiring professional [security guards] to stand at the entrance and watch over important areas of the office. A guard can check the ID cards of everyone who enters, keep a record of visitors, and act quickly if there is any problem. Having a guard at the gate makes the office feel much safer for everyone working inside.
+
+Third, I strongly recommend installing [video monitoring] cameras, also called CCTV, in and around the office. Cameras should be placed at all entry and exit points, in the corridors, and in the parking area. These cameras will record all activity throughout the day and night. If any incident takes place, the footage will help us find out what happened and who was responsible.
+
+I hope you will consider my suggestions. These three steps are simple but very effective, and they will make our office a much safer place to work.
+
+Thank you very much for your time.
+
+Regards,
+[Your Name]`
+  }
+};
+
+let currentEmail = null;
+
+function openEmail(id) {
+  const data = emails[id];
+  if (!data) return;
+  currentEmail = data;
+
+  document.getElementById('popupNum').textContent = data.num;
+  document.getElementById('popupTitle').textContent = data.title;
+  document.getElementById('popupTo').textContent = data.to;
+
+  // Render body with keyword highlights
+  const bodyEl = document.getElementById('popupBody');
+  const html = data.body.replace(/\[([^\]]+)\]/g, '<span class="kw">$1</span>');
+  bodyEl.innerHTML = html;
+
+  // Reset animation
+  const env = document.getElementById('envelope');
+  env.style.animation = 'none';
+  env.offsetHeight;
+  env.style.animation = '';
+
+  const popup = document.getElementById('emailPopup');
+  popup.style.animation = 'none';
+  popup.offsetHeight;
+  popup.style.animation = '';
+
+  const flap = document.getElementById('envFlap');
+  flap.style.animation = 'none';
+  flap.offsetHeight;
+  flap.style.animation = '';
+
+  popup.scrollTop = 0;
+  document.getElementById('overlay').classList.add('active');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeEmail() {
+  document.getElementById('overlay').classList.remove('active');
+  document.body.style.overflow = '';
+}
+
+function handleOverlayClick(e) {
+  if (e.target === document.getElementById('overlay')) closeEmail();
+}
+
+function copyEmail() {
+  if (!currentEmail) return;
+  const plain = currentEmail.body.replace(/\[([^\]]+)\]/g, '$1');
+  navigator.clipboard.writeText(plain).then(() => {
+    const btn = document.querySelector('.copy-btn-popup');
+    btn.textContent = 'Copied!';
+    btn.style.background = '#3A7A3A';
+    setTimeout(() => {
+      btn.textContent = 'Copy Email';
+      btn.style.background = '';
+    }, 2000);
+  });
+}
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closeEmail();
+});
+</script>
+</body>
+</html>
