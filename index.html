@@ -16,18 +16,8 @@
 html,body{width:100%;overflow-x:hidden;}
 body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--text);}
 
-/* FULLSCREEN OVERLAY */
-#fs-overlay{
-  position:fixed;inset:0;z-index:9999;background:var(--navy);
-  display:flex;flex-direction:column;align-items:center;justify-content:center;
-  text-align:center;padding:32px 24px;
-}
-#fs-overlay h2{font-family:'DM Serif Display',serif;font-size:28px;color:#fff;margin-bottom:12px;}
-#fs-overlay p{color:rgba(255,255,255,.6);font-size:14px;margin-bottom:28px;max-width:360px;line-height:1.7;}
-#fs-overlay .fs-btns{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;}
-
-/* APP WRAPPER — hidden until fullscreen confirmed */
-#app{display:none;width:100%;min-height:100vh;}
+/* APP WRAPPER — visible immediately */
+#app{display:block;width:100%;min-height:100vh;}
 
 /* FLOATING TOPBAR */
 #topbar{
@@ -348,19 +338,10 @@ body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--text);
 </head>
 <body>
 
-<!-- FULLSCREEN GATE -->
-<div id="fs-overlay">
-  <h2>BPO Assessment Platform</h2>
-  <p>This test runs in full-screen mode to simulate real BPO interview conditions. For the best experience, please enter full-screen.</p>
-  <div class="fs-btns">
-    <button class="btn-primary" onclick="enterFS()">Enter Full-Screen</button>
-    <button style="background:transparent;border:1px solid rgba(255,255,255,.2);color:rgba(255,255,255,.6);padding:13px 28px;border-radius:100px;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:14px;" onclick="skipFS()">Continue without Full-Screen</button>
-  </div>
-  <p style="margin-top:20px;font-size:11px;color:rgba(255,255,255,.3);">You can zoom out anytime using Ctrl − (Windows) or Cmd − (Mac)</p>
-</div>
+<!-- No fullscreen gate — app launches directly and requests fullscreen automatically -->
 
 <!-- TOPBAR -->
-<div id="topbar" style="display:none;">
+<div id="topbar">
   <div class="tb-left">
     <span class="tb-brand">BPO Assess</span>
   </div>
@@ -406,7 +387,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--text);
         <div class="mode-card" id="mode-s4" onclick="selectMode('s4')">
           <div class="mc-icon">📧</div>
           <div class="mc-name">Email Writing</div>
-          <div class="mc-detail">1 topic · 9 minutes</div>
+          <div class="mc-detail"><span style="margin-bottom: 5px;display: inline-block;">1 topic · 9 minutes</span> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span><a href="email_study_guide.html" class="btn-primary" style="padding: 2% 5%; display: inline-block; font-size: 10px;">example emails -></a></span>  </div>
         </div>
       </div>
     </div>
@@ -508,7 +489,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--text);
   <div class="transition-icon">✓</div>
   <div class="transition-title">Section 2 Complete</div>
   <div class="transition-sub">Dictation done. Next is Passage Reconstruction.</div>
-  <div class="next-section-info"><div class="nsi-label">Next Up</div><div class="nsi-name">Passage Reconstruction</div><div class="nsi-detail">5 passages · 30s to read · 3 min to write</div></div>
+  <div class="next-section-info"><div class="nsi-label">Next Up</div><div class="nsi-name">Passage Reconstruction</div><div class="nsi-detail">5 passages · 30s to read · 90s to write</div></div>
   <button class="btn-primary" onclick="startSection3()">Continue →</button>
 </div>
 
@@ -653,7 +634,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--text);
 // ============================================================
 // DATA
 // ============================================================
-const ALL_FILL=[
+const ALL_FILL = [
   {q:"She was awarded a promotion based on her excellent _____ on the job.",a:["performance"]},
   {q:"If you want to meet with the CEO, you need to make an _____ in advance.",a:["appointment"]},
   {q:"In cities with good public _____ it is hard to understand why people insist on driving to work.",a:["transport","transportation"]},
@@ -703,7 +684,56 @@ const ALL_FILL=[
   {q:"You need to make an appointment weeks in _____ to meet the CEO.",a:["advance"]},
   {q:"Recent studies show shopping _____ of consumers have changed dramatically.",a:["preference","preferences"]},
   {q:"Give regards _____ Anna and the kids.",a:["to"]},
-  {q:"You can _____ the order as soon as you know what you want to purchase.",a:["place"]}
+  {q:"You can _____ the order as soon as you know what you want to purchase.",a:["place"]},
+  {q:"My friend has lived in New York all his life, he took me on a personal _____ of the city.",a:["tour"]},
+  {q:"The product is out of stock until the next _____ arrives.",a:["shipment","delivery","stock"]},
+  {q:"Let's _____ tomorrow's presentation until next week.",a:["postpone"]},
+  {q:"I am suffering from _____, it was an 8 hour flight.",a:["jetlag","jet lag"]},
+  {q:"The baker had several _____ on his wrist from the times he touched the oven.",a:["burns"]},
+  {q:"The event was _____ by an audience of over 30,000 people.",a:["attended"]},
+  {q:"We had made a _____ to go to Peru for vacation but changed our minds.",a:["plan"]},
+  {q:"A recent study found electronic _____ are popular among online shoppers.",a:["devices"]},
+  {q:"Because the company did not accept mail, he had to _____ his application online.",a:["submit"]},
+  {q:"The library _____ the event by posting flyers throughout the city.",a:["promoted"]},
+  {q:"His appearance had changed so much that I didn't even _____ him when I saw him.",a:["recognize","recognise"]},
+  {q:"You may not _____ with his methods, but he makes a lot of money for the company.",a:["agree"]},
+  {q:"I couldn't believe it when he agreed to make an _____ on the show tonight.",a:["appearance"]},
+  {q:"You can make _____ of this document in the print room.",a:["copies"]},
+  {q:"I was recently _____ from the Berlin office to the Tokyo office.",a:["moved","transferred","shifted"]},
+  {q:"In my company, it's the manager's job to divide work _____ the team members.",a:["among"]},
+  {q:"Everybody who owns a television pays an annual license _____.",a:["fee"]},
+  {q:"Some of my fondest memories are going fishing and setting up a _____ near a lake with my family.",a:["tent"]},
+  {q:"The city can be divided into two parts. The outer sections are _____ new.",a:["fairly","quite","relatively"]},
+  {q:"Don't forget to ask for a _____ when you pay.",a:["receipt"]},
+  {q:"I can't _____ what it must be like having to do a task like this all day.",a:["imagine"]},
+  {q:"After making one last modification to the layout the newsletter was ready to be _____ out.",a:["sent"]},
+  {q:"Her best-selling novel was _____ for several awards.",a:["nominated"]},
+  {q:"The department is responsible for the mistake so they will have to _____ the cost of failure.",a:["bear"]},
+  {q:"Although sales were down last quarter the owner had high _____ that business will improve.",a:["hopes"]},
+  {q:"I know you love travelling abroad, would you be _____ in a position in our overseas office?",a:["interested"]},
+  {q:"We had plans to go hiking but due to weather conditions we had to come up with an _____ plan.",a:["alternate","alternative"]},
+  {q:"The training program _____ a wide selection of courses to interested students.",a:["offers"]},
+  {q:"The number of attendees far exceeded our expectation. The event site was very _____.",a:["crowded"]},
+  {q:"All of the city council members, with the _____ of one, voted against the new law.",a:["exception"]},
+  {q:"Negotiations came to a halt as leaders struggled to reach terms _____ to both parties.",a:["agreeable","acceptable"]},
+  {q:"The speaker at the conference was very interesting. I _____ his talk very much.",a:["liked","enjoyed"]},
+  {q:"Since you have finished everything else, you can take the _____ of the week off.",a:["rest"]},
+  {q:"He burned the oil and the _____ left a black mark above the stove.",a:["flame"]},
+  {q:"He is so concerned about the environment that his shoes are made of _____ tyres.",a:["recycled"]},
+  {q:"It was a clear blue sky and the sun was _____ brightly.",a:["shining"]},
+  {q:"Looks like this document has been edited already, is this the final _____?",a:["copy","version","document"]},
+  {q:"Lock your valuables in the _____ of the hotel room.",a:["locker","safe"]},
+  {q:"Even if you run very fast you probably won't be able to _____ the train, it's too late.",a:["catch"]},
+  {q:"The new trainees are _____ along just fine.",a:["getting"]},
+  {q:"She was temporarily _____ by the brightness of the sun.",a:["blinded"]},
+  {q:"The amount of air pollution in this town has increased _____ since the factory opened.",a:["substantially","significantly"]},
+  {q:"I don't _____ what I wrote, I'm going to rewrite it completely.",a:["like","remember"]},
+  {q:"She gets her supplies at a reasonable rate because she buys in _____.",a:["bulk"]},
+  {q:"It _____ to be seen whether the company will stay in business next year.",a:["remains","has"]},
+  {q:"I am sorry I am late, I _____ up late this morning.",a:["woke"]},
+  {q:"I am a salesman. And what _____ you do?",a:["do"]},
+  {q:"When you cross a bridge you need to pay _____.",a:["attention","toll"]},
+  {q:"City building height will _____ on local regulations.",a:["depend"]},
 ];
 
 // DICTATION — audio files go here when ready
@@ -713,7 +743,7 @@ const ALL_DICT=[
   {text:"Don't we have her address on file?",audio:"./1.mp3"},
   {text:"Where are the pens we use to write on the board?",audio:"./2.mp3"},
   {text:"It's a good idea to create different versions of your resume.",audio:"./3.mp3"},
-  {text:"We report any computer issue to technical support.",audio:"./4.mp3"},
+  {text:"We report any computer issues to technical support.",audio:"./4.mp3"},
   {text:"It's important to follow up after a job interview.",audio:"./5.mp3"},
   {text:"What if I caught a later train?",audio:"./6.mp3"},
   {text:"I will be back in the middle of September.",audio:"./7.mp3"},
@@ -728,13 +758,13 @@ const ALL_DICT=[
   {text:"Could you tell me how many people are coming to the reception?",audio:"./16.mp3"},
   {text:"I am leaving in early June.",audio:"./17.mp3"},
   {text:"I will be finished by Friday.",audio:"./18.mp3"},
-  {text:"We're breaking for lunch.",audio:"./19.mp3"},
-  {text:"The document needs to be edited.",audio:"./20.mp3"},
-  {text:"Eric filled out the form by hand because the system was down.",audio:"./21.mp3"},
-  {text:"Why didn't you ask him to leave a message?",audio:"./22.mp3"},
-  {text:"Many have seen their salary cut.",audio:"./23.mp3"},
-  {text:"The company first opened when I was much younger.",audio:"./24.mp3"},
-  {text:"Many companies operate in more than one country.",audio:"./25.mp3"},
+  {text:"We're breaking for lunch.",audio:"./20.mp3"},
+  {text:"The document needs to be edited.",audio:"./22.mp3"},
+  {text:"Eric filled out the form by hand because the system was down.",audio:"./23.mp3"},
+  {text:"Why didn't you ask him to leave a message?",audio:"./24.mp3"},
+  {text:"Many have seen their salary cut.",audio:"./25.mp3"},
+  {text:"The company first opened when I was much younger.",audio:null},
+  {text:"You must have been so pleased.",audio:"./21.mp3"},
   {text:"They told me I'd have to pay before the class begins.",audio:"./26.mp3"},
   {text:"I can book us a table at a good Italian restaurant.",audio:"./27.mp3"},
   {text:"The company has grown too large over the past few years.",audio:"./28.mp3"},
@@ -758,19 +788,19 @@ const ALL_DICT=[
   {text:"The rate of inflation has increased this month.",audio:"./46.mp3"},
   {text:"Let's put our heads together and come up with a solution.",audio:"./47.mp3"},
   {text:"The new intern has a lot to learn about this company.",audio:"./48.mp3"},
-  {text:"According to the weather forecast it's going to be really hot this weekend.",audio:"./49.mp3"},
+  {text:"According to the weather forecast, it's going to be really hot this weekend.",audio:"./49.mp3"},
   {text:"When do you expect him to return to the office?",audio:"./50.mp3"},
   {text:"I'll have finished the report by then.",audio:"./51.mp3"},
   {text:"Could you recommend some good hotels?",audio:"./52.mp3"},
   {text:"We have agreed on all the major points.",audio:"./53.mp3"},
   {text:"The store plans to hire some temporary employees.",audio:"./54.mp3"},
-  {text:"Speak with my assistant and she will schedule you.",audio:"./55.mp3"},
+  {text:"Speak with my assistant, and she will schedule you.",audio:"./55.mp3"},
   {text:"We need to make sure that our department is ready for inspection.",audio:"./56.mp3"},
   {text:"I need a hotel near the airport because I am arriving late.",audio:"./57.mp3"},
   {text:"He stays healthy by eating well and exercising often.",audio:"./58.mp3"},
   {text:"He forgot to bring money for an admission ticket.",audio:"./59.mp3"},
   {text:"Employers generally look for strong technical skills.",audio:"./60.mp3"},
-  {text:" I need volunteers for the weekend seminar.",audio:"./61.mp3"},
+  {text:"I need volunteers for the weekend seminar.",audio:"./61.mp3"},
   {text:"Where are the colored papers we use to make the brochures? ",audio:"./62.mp3"},
   {text:"I am doing research, but I can't locate a book I need. ",audio:"./63.mp3"},
   {text:"The speeding system was just repaired. ",audio:"./64.mp3"}
@@ -802,7 +832,7 @@ let state={
   s1:{questions:[],idx:0,answers:[],timer:null},
   s2:{sentences:[],idx:0,answers:[],timer:null,playsLeft:2,audioMode:false},
   s3:{passages:[],idx:0,answers:[],timer:null},
-  s4:{topic:null,answer:'',timer:null},
+  s4:{topic:null,answer:'',timer:null,_submitted:false},
   scores:{s1:null,s2:null,s3:null,s4:null},
   endedEarly:false
 };
@@ -811,20 +841,16 @@ function shuffle(a){let b=[...a];for(let i=b.length-1;i>0;i--){let j=Math.floor(
 function pick(a,n){return shuffle(a).slice(0,n);}
 
 // ============================================================
-// FULLSCREEN
+// FULLSCREEN — auto-request on first click anywhere (browsers require user gesture)
 // ============================================================
-function enterFS(){
+function requestFS(){
   const el=document.documentElement;
   const req=el.requestFullscreen||el.webkitRequestFullscreen||el.mozRequestFullScreen||el.msRequestFullscreen;
-  if(req) req.call(el).catch(()=>{});
-  launchApp();
+  if(req&&!document.fullscreenElement) req.call(el).catch(()=>{});
 }
-function skipFS(){launchApp();}
-function launchApp(){
-  document.getElementById('fs-overlay').style.display='none';
-  document.getElementById('app').style.display='block';
-  document.getElementById('topbar').style.display='flex';
-}
+// Trigger fullscreen on the very first user interaction
+document.addEventListener('click', requestFS, {once:true});
+document.addEventListener('keydown', requestFS, {once:true});
 function toggleFS(){
   if(!document.fullscreenElement){
     document.documentElement.requestFullscreen&&document.documentElement.requestFullscreen().catch(()=>{});
@@ -870,7 +896,7 @@ const INSTR={
   </div>`,
   s1:`<div style="display:flex;flex-direction:column;gap:12px;">${instrRow('✏️','Fill in the Blanks','20 questions, 15 seconds each. Type the missing word. Auto-submits when time runs out.')}${instrRow('!','Important','No copy-paste allowed.')}</div>`,
   s2:`<div style="display:flex;flex-direction:column;gap:12px;">${instrRow('🎧','Dictation','Audio plays. Listen carefully. You have 20 seconds to type the sentence from memory. You can play each audio twice.')}${instrRow('!','Important','No copy-paste allowed.')}</div>`,
-  s3:`<div style="display:flex;flex-direction:column;gap:12px;">${instrRow('📖','Passage Reconstruction','Read the passage for 30 seconds. Then reconstruct it from memory in 3 minutes. Maximum 100 words.')}${instrRow('!','Important','No copy-paste allowed.')}</div>`,
+  s3:`<div style="display:flex;flex-direction:column;gap:12px;">${instrRow('📖','Passage Reconstruction','Read the passage for 30 seconds. Then reconstruct it from memory in 01:30 minutes. Maximum 100 words.')}${instrRow('!','Important','No copy-paste allowed.')}</div>`,
   s4:`<div style="display:flex;flex-direction:column;gap:12px;">${instrRow('📧','Email Writing','Write a professional email on the given topic. Minimum 180 words. 9 minutes total. Include keywords shown.')}${instrRow('!','Important','No copy-paste allowed.')}</div>`
 };
 function instrRow(n,title,desc){
@@ -897,7 +923,7 @@ function startTest(){
     s1:{questions:[],idx:0,answers:[],timer:null},
     s2:{sentences:[],idx:0,answers:[],timer:null,playsLeft:2,audioMode:false},
     s3:{passages:[],idx:0,answers:[],timer:null},
-    s4:{topic:null,answer:'',timer:null},
+    s4:{topic:null,answer:'',timer:null,_submitted:false},
     scores:{s1:null,s2:null,s3:null,s4:null},
     endedEarly:false
   };
@@ -919,10 +945,10 @@ function startTest(){
 }
 
 function clearAllTimers(){
-  clearInterval(state.s1&&state.s1.timer);
-  clearInterval(state.s2&&state.s2.timer);
-  clearInterval(state.s3&&state.s3.timer);
-  clearInterval(state.s4&&state.s4.timer);
+  if(state&&state.s1)clearInterval(state.s1.timer);
+  if(state&&state.s2)clearInterval(state.s2.timer);
+  if(state&&state.s3)clearInterval(state.s3.timer);
+  if(state&&state.s4)clearInterval(state.s4.timer);
 }
 
 // ============================================================
@@ -934,11 +960,22 @@ function forceEndSession(){
   closeEndModal();
   clearAllTimers();
   state.endedEarly=true;
-  // save current textarea if on s3
   const cur=document.querySelector('.screen.active');
+  // Save whichever section is currently active
+  if(cur&&cur.id==='screen-s1'){
+    const inp=document.getElementById('s1-input');
+    if(inp&&!state.s1._advancing&&state.s1.answers.length<=state.s1.idx)
+      state.s1.answers.push(inp.value.trim().toLowerCase());
+  }
+  if(cur&&cur.id==='screen-s2'){
+    const inp=document.getElementById('s2-input');
+    if(inp&&!state.s2._advancing&&state.s2.answers.length<=state.s2.idx)
+      state.s2.answers.push(inp.value.trim());
+  }
   if(cur&&cur.id==='screen-s3'){
     const ta=document.getElementById('s3-textarea');
-    if(ta&&state.s3.answers.length<=state.s3.idx) state.s3.answers.push(ta.value.trim());
+    if(ta&&!state.s3._advancing&&state.s3.answers.length<=state.s3.idx)
+      state.s3.answers.push(ta.value.trim());
   }
   if(cur&&cur.id==='screen-s4'){
     state.s4.answer=document.getElementById('s4-email').value;
@@ -950,9 +987,11 @@ function forceEndSession(){
 // ============================================================
 // ANTI-CHEAT
 // ============================================================
+const ANSWER_IDS=new Set(['s1-input','s2-input','s3-textarea','s4-email']);
+function isAnswerField(el){return el&&ANSWER_IDS.has(el.id);}
 document.addEventListener('copy',e=>{e.preventDefault();showCopyNotice();});
 document.addEventListener('cut',e=>{e.preventDefault();showCopyNotice();});
-document.addEventListener('paste',e=>{e.preventDefault();showCopyNotice();});
+document.addEventListener('paste',e=>{if(isAnswerField(e.target))return;e.preventDefault();showCopyNotice();});
 document.addEventListener('contextmenu',e=>e.preventDefault());
 function showCopyNotice(){
   const n=document.getElementById('copy-notice');
@@ -964,6 +1003,7 @@ function showCopyNotice(){
 // SECTION 1 — FILL IN BLANKS
 // ============================================================
 function s1Render(){
+  state.s1._advancing=false;
   const{questions,idx}=state.s1;
   const q=questions[idx];
   document.getElementById('s1-qinfo').textContent=`Question ${idx+1} of 20`;
@@ -979,7 +1019,10 @@ function s1Render(){
   btn.textContent=idx===19?'Finish Section ✓':'Next →';
   s1StartTimer();
   const inp=document.getElementById('s1-input');
-  if(inp){setTimeout(()=>inp.focus(),50);inp.addEventListener('keydown',e=>{if(e.key==='Enter')s1Next();});}
+  if(inp){
+    setTimeout(()=>inp.focus(),50);
+    inp.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();s1Next();}});
+  }
 }
 function s1StartTimer(){
   clearInterval(state.s1.timer);
@@ -994,10 +1037,12 @@ function s1StartTimer(){
 }
 function s1Next(auto=false){
   clearInterval(state.s1.timer);
+  if(state.s1._advancing)return;
+  state.s1._advancing=true;
   const inp=document.getElementById('s1-input');
   state.s1.answers.push(inp?inp.value.trim().toLowerCase():'');
   state.s1.idx++;
-  if(state.s1.idx<20) s1Render();
+  if(state.s1.idx<20){state.s1._advancing=false;s1Render();}
   else {
     if(activeMode==='s1'){calculateScores();showResults();}
     else{state.s2.sentences=pick(ALL_DICT,10);showScreen('screen-t1');}
@@ -1009,6 +1054,8 @@ function s1Next(auto=false){
 // ============================================================
 function startSection2(){showScreen('screen-s2');s2Render();}
 function s2Render(){
+  state.s2._advancing=false;
+  state.s2._countdownStarted=false;
   const{sentences,idx}=state.s2;
   const item=sentences[idx];
   document.getElementById('s2-qinfo').textContent=`Sentence ${idx+1} of 10`;
@@ -1047,24 +1094,29 @@ function s2Render(){
 }
 
 function s2PlayAudio(){
-  const item=state.s2.sentences[state.s2.idx];
   if(state.s2.playsLeft<=0)return;
+  // Disable immediately before async play() to prevent double-tap
+  document.getElementById('s2-play-btn').disabled=true;
   const audioEl=document.getElementById('s2-audio-el');
   audioEl.currentTime=0;audioEl.play();
   state.s2.playsLeft--;
   document.getElementById('s2-plays-left').textContent=state.s2.playsLeft+' play'+(state.s2.playsLeft!==1?'s':'')+' remaining';
-  document.getElementById('s2-play-btn').disabled=state.s2.playsLeft<=0;
+  // Re-enable only if plays remain
+  if(state.s2.playsLeft>0) document.getElementById('s2-play-btn').disabled=false;
 }
 function s2AfterAudio(){
+  // Guard: only start typing countdown once even if onended fires twice
+  if(state.s2._countdownStarted)return;
+  state.s2._countdownStarted=true;
   document.getElementById('s2-input').disabled=false;
   document.getElementById('s2-input').focus();
   s2TypeCountdown();
 }
 function s2TypeCountdown(){
-    clearInterval(state.s2.timer);
+  clearInterval(state.s2.timer);
   let t=20;
   const timer=document.getElementById('s2-timer');
-  timer.textContent=t;timer.classList.remove('danger');
+  timer.textContent='20';timer.classList.remove('danger');
   state.s2.timer=setInterval(()=>{
     t--;
     timer.textContent=t<10?'0'+t:t;
@@ -1075,6 +1127,7 @@ function s2TypeCountdown(){
 }
 
 function s2FlashRead(){
+  clearInterval(state.s2.timer);
   let t=5;
   const numEl=document.getElementById('s2-ring-num');
   const circ=document.getElementById('s2-ring-fg');
@@ -1099,7 +1152,7 @@ function s2FlashType(){
   const numEl=document.getElementById('s2-ring-num');
   const circ=document.getElementById('s2-ring-fg');
   const CIRC=150.8;
-  timer.textContent=t;timer.classList.remove('danger');
+  timer.textContent='20';timer.classList.remove('danger');
   circ.style.strokeDashoffset=0;
   state.s2.timer=setInterval(()=>{
     t--;
@@ -1107,16 +1160,17 @@ function s2FlashType(){
     numEl.textContent=t;
     circ.style.strokeDashoffset=CIRC*(1-t/20);
     if(t<=5)timer.classList.add('danger');
-    if(t<=15)document.getElementById('s2-next-btn').style.display='inline-block';
+    if(t<=10)document.getElementById('s2-next-btn').style.display='inline-block';
     if(t<=0){clearInterval(state.s2.timer);s2Next(true);}
   },1000);
 }
 function s2Next(auto=false){
   clearInterval(state.s2.timer);
-  if (state.s2.idx >= 10) return;
+  if(state.s2._advancing)return;
+  state.s2._advancing=true;
   state.s2.answers.push(document.getElementById('s2-input').value.trim());
   state.s2.idx++;
-  if(state.s2.idx<10) s2Render();
+  if(state.s2.idx<10){state.s2._advancing=false;s2Render();}
   else {
     if(activeMode==='s2'){calculateScores();showResults();}
     else{state.s3.passages=pick(ALL_PASSAGES,5);showScreen('screen-t2');}
@@ -1128,6 +1182,8 @@ function s2Next(auto=false){
 // ============================================================
 function startSection3(){showScreen('screen-s3');s3Render();}
 function s3Render(){
+  state.s3._advancing=false;
+  clearInterval(state.s3.timer);
   const{passages,idx}=state.s3;
   document.getElementById('s3-qinfo').textContent=`Passage ${idx+1} of 5`;
   document.getElementById('s3-progress').style.width=((idx+1)/5*100)+'%';
@@ -1144,6 +1200,7 @@ function s3Render(){
   s3ReadPhase();
 }
 function s3ReadPhase(){
+  clearInterval(state.s3.timer);
   let t=30;
   const timer=document.getElementById('s3-timer');
   timer.textContent=t;
@@ -1163,10 +1220,10 @@ function s3WritePhase(){
   const btn=document.getElementById('s3-next-btn');
   btn.textContent=state.s3.idx===4?'Finish Section ✓':'Next Passage →';
   btn.style.display='inline-block';
-  let t=180;
+  let t=90;
   const timer=document.getElementById('s3-timer');
   timer.classList.remove('danger');
-  timer.textContent='3:00';
+  timer.textContent='1:30';
   state.s3.timer=setInterval(()=>{
     t--;
     const m=Math.floor(t/60),s=t%60;
@@ -1178,14 +1235,22 @@ function s3WritePhase(){
 function s3WordCount(){
   const ta=document.getElementById('s3-textarea');
   const words=ta.value.trim().split(/\s+/).filter(w=>w.length>0);
-  if(words.length>100) ta.value=words.slice(0,100).join(' ');
-  document.getElementById('s3-wc').textContent=Math.min(words.length,100)+' / 100 words';
+  const wc=words.length;
+  if(wc>100){
+    const allowed=words.slice(0,100).join(' ');
+    const sel=ta.selectionStart;
+    ta.value=allowed;
+    ta.selectionStart=ta.selectionEnd=Math.min(sel,allowed.length);
+  }
+  document.getElementById('s3-wc').textContent=Math.min(wc,100)+' / 100 words';
 }
 function s3Next(auto=false){
   clearInterval(state.s3.timer);
+  if(state.s3._advancing)return;
+  state.s3._advancing=true;
   state.s3.answers.push(document.getElementById('s3-textarea').value.trim());
   state.s3.idx++;
-  if(state.s3.idx<5) s3Render();
+  if(state.s3.idx<5){state.s3._advancing=false;s3Render();}
   else {
     if(activeMode==='s3'){calculateScores();showResults();}
     else{state.s4.topic=ALL_EMAIL_TOPICS[Math.floor(Math.random()*ALL_EMAIL_TOPICS.length)];showScreen('screen-t3');}
@@ -1197,15 +1262,19 @@ function s3Next(auto=false){
 // ============================================================
 function startSection4(){showScreen('screen-s4');s4Start();}
 function s4Start(){
+  clearInterval(state.s4.timer);
   const topic=state.s4.topic;
   document.getElementById('s4-topic').textContent=topic.topic;
   const krow=document.getElementById('s4-keywords');
-  krow.innerHTML=topic.keywords.map(k=>`<span class="keyword-pill" id="kp-${k.replace(/\s/g,'_')}">${k}</span>`).join('');
+  krow.innerHTML=topic.keywords.map(k=>`<span class="keyword-pill" id="kp-${k.replace(/[^a-z0-9]/gi,'_')}">${k}</span>`).join('');
   document.getElementById('s4-email').value='';
   s4Update();
   let t=540;
   const timer=document.getElementById('s4-timer');
   const prog=document.getElementById('s4-progress');
+  timer.textContent='9:00';
+  timer.classList.remove('danger');
+  prog.style.width='100%';
   state.s4.timer=setInterval(()=>{
     t--;
     const m=Math.floor(t/60),s=t%60;
@@ -1216,6 +1285,7 @@ function s4Start(){
   },1000);
 }
 function s4Update(){
+  if(!state.s4.topic)return;
   const val=document.getElementById('s4-email').value;
   const wc=val.trim().split(/\s+/).filter(w=>w.length>0).length;
   document.getElementById('s4-wc-label').textContent=`Words: ${wc}`;
@@ -1224,12 +1294,14 @@ function s4Update(){
   else{warn.textContent='✓ Word count met';warn.style.color='var(--success)';warn.className='';}
   const lower=val.toLowerCase();
   state.s4.topic.keywords.forEach(k=>{
-    const el=document.getElementById('kp-'+k.replace(/\s/g,'_'));
+    const el=document.getElementById('kp-'+k.replace(/[^a-z0-9]/gi,'_'));
     if(el)el.className='keyword-pill'+(lower.includes(k.toLowerCase())?' used':'');
   });
   state.s4.answer=val;
 }
 function submitEmail(auto=false){
+  if(state.s4._submitted)return;
+  state.s4._submitted=true;
   clearInterval(state.s4.timer);
   state.s4.answer=document.getElementById('s4-email').value;
   calculateScores();showResults();
@@ -1254,7 +1326,7 @@ function calculateScores(){
       const ua=norm(state.s1.answers[i]||'');
       if(q.a.some(a=>norm(a)===ua))sc++;
     });
-    state.scores.s1=sc;
+    state.scores.s1=Math.min(sc,20);
   }
   // S2
   if(state.s2.sentences.length>0){
@@ -1263,7 +1335,7 @@ function calculateScores(){
       const ua=norm(state.s2.answers[i]||'');
       const ca=norm(item.text);
       const sim=similarity(ua,ca);
-      if(sim>=0.85)sc+=2;else if(sim>=0.6)sc+=1;
+      if(sim>=0.95)sc+=2;else if(sim>=0.8)sc+=1;
     });
     state.scores.s2=Math.min(sc,20);
   }
@@ -1274,7 +1346,9 @@ function calculateScores(){
       const ua=state.s3.answers[i]||'';
       const words=ua.trim().split(/\s+/).filter(w=>w.length>0);
       let s=5;
-      if(words.length<50)s-=2;
+      if(words.length<20)s-=2;          // very short: -2
+      else if(words.length<50)s-=1;     // short: -1
+      // 50-100 words: no deduction
       if(similarity(norm(ua),norm(p.text))<0.15)s-=2;
       total+=Math.max(0,s);
     });
@@ -1290,7 +1364,7 @@ function calculateScores(){
       const lower=email.toLowerCase();
       const used=state.s4.topic.keywords.filter(k=>lower.includes(k.toLowerCase()));
       sc-=(state.s4.topic.keywords.length-used.length)*5;
-      if(!/dear|hello|hi\s/i.test(email))sc-=2.5;
+      if(!/dear|hello|hi\b/i.test(email))sc-=2.5;
       if(!/regards|sincerely|thanks|thank you/i.test(email))sc-=2.5;
       if(wc>400)sc-=2;
       state.scores.s4=Math.max(0,Math.round(sc*10)/10);
@@ -1351,7 +1425,7 @@ function renderDetail(){
     state.s2.sentences.forEach((item,i)=>{
       const ua=norm(state.s2.answers[i]||'');
       const sim=similarity(ua,norm(item.text));
-      const pts=sim>=0.85?2:sim>=0.6?1:0;
+      const pts=sim>=0.95?2:sim>=0.8?1:0;
       html+=`<div class="answer-row">
         <div class="answer-q">
           <div style="font-size:11px;color:var(--text-muted);margin-bottom:3px;">Original:</div>
@@ -1386,7 +1460,7 @@ function renderDetail(){
     const wc=email.trim().split(/\s+/).filter(w=>w.length>0).length;
     const lower=email.toLowerCase();
     const used=topic.keywords.filter(k=>lower.includes(k.toLowerCase()));
-    const hasG=/dear|hello|hi\s/i.test(email);
+    const hasG=/dear|hello|hi\b/i.test(email);
     const hasC=/regards|sincerely|thanks|thank you/i.test(email);
     html+=`<div class="detail-section"><div class="detail-section-title">Email Writing — ${s4}/20</div>
     <div class="email-result-card">
@@ -1412,7 +1486,20 @@ function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').repl
 
 function restartTest(){
   clearAllTimers();
+  state={
+    s1:{questions:[],idx:0,answers:[],timer:null},
+    s2:{sentences:[],idx:0,answers:[],timer:null,playsLeft:2,audioMode:false},
+    s3:{passages:[],idx:0,answers:[],timer:null},
+    s4:{topic:null,answer:'',timer:null,_submitted:false},
+    scores:{s1:null,s2:null,s3:null,s4:null},
+    endedEarly:false
+  };
   document.getElementById('end-session-btn').style.display='none';
+  selectedMode='all';
+  activeMode='all';
+  document.querySelectorAll('.mode-card').forEach(c=>c.classList.remove('selected'));
+  const allCard=document.getElementById('mode-all');
+  if(allCard)allCard.classList.add('selected');
   showScreen('screen-welcome');
 }
 
